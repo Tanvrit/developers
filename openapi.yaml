@@ -1,0 +1,1363 @@
+openapi: 3.1.0
+info:
+  title: Tanvrit Server API
+  description: |
+    REST API for the Tanvrit commerce platform. Covers authentication, business management,
+    inventory, orders, pricing, storefront (public), and marketplace operations.
+
+    **Authentication**: Most endpoints require a JWT Bearer token obtained via `/api/auth/AUTHENTICATE`
+    or `/api/auth/LOGIN_EMAIL`. Pass it as `Authorization: Bearer <token>`.
+
+    **Request pattern**: The API uses a POST-based RPC style. All mutations and queries are POST
+    requests with JSON bodies. Responses follow a uniform envelope: `{ status, message, payload }`.
+  version: 0.0.3
+  contact:
+    name: Tanvrit Engineering
+    url: https://tanvrit.com
+
+servers:
+  - url: https://api.tanvrit.com
+    description: Production
+  - url: http://localhost:8080
+    description: Local development
+
+tags:
+  - name: Auth
+    description: User authentication, registration, and session management
+  - name: Business
+    description: Business (store) CRUD, lookup, and lifecycle management
+  - name: Inventory
+    description: Product and category management
+  - name: Orders
+    description: Order creation, retrieval, and status updates
+  - name: Cart
+    description: Shopping cart operations
+  - name: Pricing
+    description: Price tiers, schedules, and price calculation
+  - name: Storefront
+    description: Public storefront endpoints (no auth required)
+  - name: Marketplace
+    description: Buyer-side cart and checkout flow
+  - name: Customer
+    description: Customer record management
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from /api/auth/AUTHENTICATE or /api/auth/LOGIN_EMAIL
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for AI Commerce Gateway merchant endpoints. Obtain via /api/ai/v1/keys
+
+  schemas:
+    BaseResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: SUCCESS
+        message:
+          type: string
+          example: Success
+          nullable: true
+      required: [status]
+
+    AuthRequest:
+      type: object
+      properties:
+        mobile:
+          type: string
+          example: "9876543210"
+        dialCode:
+          type: string
+          example: "+91"
+        name:
+          type: string
+          example: John Doe
+          nullable: true
+      required: [mobile, dialCode]
+
+    AuthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: SUCCESS
+        message:
+          type: string
+          nullable: true
+        payload:
+          type: object
+          nullable: true
+          properties:
+            token:
+              type: string
+              description: JWT access token
+            refreshToken:
+              type: string
+              description: Refresh token for obtaining new access tokens
+            user:
+              $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        mobile:
+          type: string
+        dialCode:
+          type: string
+        email:
+          type: string
+          nullable: true
+        profileImage:
+          type: string
+          nullable: true
+        isVerified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          minLength: 6
+      required: [email, password]
+
+    RefreshTokenRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required: [refreshToken]
+
+    IdRequest:
+      type: object
+      properties:
+        id:
+          type: string
+      required: [id]
+
+    Business:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        mobile:
+          type: string
+        dialCode:
+          type: string
+        email:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        businessType:
+          type: string
+          nullable: true
+        profileImage:
+          type: string
+          nullable: true
+        userId:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, PENDING, SUSPENDED, REJECTED]
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateBusinessRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        name:
+          type: string
+        mobile:
+          type: string
+        dialCode:
+          type: string
+        email:
+          type: string
+          nullable: true
+        businessType:
+          type: string
+          nullable: true
+      required: [userId, name, mobile, dialCode]
+
+    RetrieveBusinessRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+      required: [userId]
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: double
+        images:
+          type: array
+          items:
+            type: string
+        categoryId:
+          type: string
+          nullable: true
+        businessId:
+          type: string
+        storeId:
+          type: string
+          nullable: true
+        stock:
+          type: integer
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateProductRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        businessId:
+          type: string
+        storeId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: double
+        categoryId:
+          type: string
+          nullable: true
+      required: [userId, businessId, name]
+
+    RetrieveProductRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        businessId:
+          type: string
+        storeId:
+          type: string
+          nullable: true
+      required: [businessId]
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+          nullable: true
+        businessId:
+          type: string
+        parentId:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        businessId:
+          type: string
+        storeId:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+              name:
+                type: string
+              quantity:
+                type: integer
+              price:
+                type: number
+                format: double
+        totalAmount:
+          type: number
+          format: double
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, PREPARING, READY, DISPATCHED, DELIVERED, CANCELLED, DECLINED]
+        createdAt:
+          type: string
+          format: date-time
+
+    OrderRetrieveRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          nullable: true
+        businessId:
+          type: string
+          nullable: true
+        storeId:
+          type: string
+          nullable: true
+
+    OrderUpdateStatusRequest:
+      type: object
+      properties:
+        orderId:
+          type: string
+        status:
+          type: string
+          enum: [CONFIRMED, PREPARING, READY, DISPATCHED, DELIVERED, CANCELLED, DECLINED]
+      required: [orderId, status]
+
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        name:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+          format: double
+        image:
+          type: string
+          nullable: true
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        mobile:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        businessId:
+          type: string
+        totalOrders:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    PriceTier:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        businessId:
+          type: string
+        minQuantity:
+          type: integer
+        maxQuantity:
+          type: integer
+          nullable: true
+        priceMultiplier:
+          type: number
+          format: double
+
+    StorefrontStore:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        logo:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        categories:
+          type: array
+          items:
+            type: string
+
+    PaginatedResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+          nullable: true
+        payload:
+          type: array
+          items: {}
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+
+security:
+  - BearerAuth: []
+
+paths:
+  # ── Auth ──────────────────────────────────────────────────────────────────
+
+  /api/auth/CHECK_ACCOUNT:
+    post:
+      tags: [Auth]
+      summary: Check if an account exists
+      description: Checks whether a user account exists for the given mobile number. Rate-limited to 5 attempts per 15 minutes per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Account check result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '429':
+          description: Too many requests
+
+  /api/auth/AUTHENTICATE:
+    post:
+      tags: [Auth]
+      summary: Authenticate user (OTP-based)
+      description: Authenticates via mobile + OTP. Returns JWT access token and refresh token on success. Rate-limited to 5 attempts per 15 minutes per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Authentication failed
+
+  /api/auth/REGISTER:
+    post:
+      tags: [Auth]
+      summary: Register new user
+      description: Creates a new user account with mobile number. Requires name. Rate-limited to 5 attempts per 15 minutes per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/AuthRequest'
+                - type: object
+                  properties:
+                    name:
+                      type: string
+                      example: John Doe
+                  required: [name]
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /api/auth/LOGIN_EMAIL:
+    post:
+      tags: [Auth]
+      summary: Login with email and password
+      description: Authenticates using email + password. Returns JWT tokens on success. Rate-limited to 5 attempts per 15 minutes per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /api/auth/REFRESH_TOKEN:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      description: Exchanges a valid refresh token for a new JWT access token. Rate-limited to 10 attempts per 15 minutes per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: New tokens issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid or expired refresh token
+
+  /api/auth/LOGOUT:
+    post:
+      tags: [Auth]
+      summary: Logout current user
+      description: Invalidates the current session for the authenticated user.
+      responses:
+        '200':
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Business ─────────────────���────────────────────────────────────────────
+
+  /api/store/CREATE_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Create a new business
+      description: Registers a new business (store) for the authenticated user. Requires userId, name, mobile, and dialCode.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBusinessRequest'
+      responses:
+        '200':
+          description: Business created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Business'
+
+  /api/store/RETRIEVE_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Retrieve businesses for a user
+      description: Returns all businesses owned by or associated with the given userId.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrieveBusinessRequest'
+      responses:
+        '200':
+          description: List of businesses
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Business'
+
+  /api/store/UPDATE_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Update a business
+      description: Updates business details such as name, address, email, or profile image.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+                address:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Business updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Business'
+
+  # ── Inventory (Products) ──────────────────────────────────────────────────
+
+  /api/inventory/product/CREATE_PRODUCT:
+    post:
+      tags: [Inventory]
+      summary: Create a product
+      description: Creates a new product in the specified business inventory.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '200':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Product'
+
+  /api/inventory/product/RETRIEVE_PRODUCT:
+    post:
+      tags: [Inventory]
+      summary: Retrieve products
+      description: Returns all products for a business, optionally filtered by storeId.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrieveProductRequest'
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Product'
+
+  /api/inventory/product/UPDATE_PRODUCT:
+    post:
+      tags: [Inventory]
+      summary: Update a product
+      description: Updates product details such as name, description, price, or stock.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                price:
+                  type: number
+                  format: double
+                  nullable: true
+                stock:
+                  type: integer
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Product'
+
+  /api/inventory/product/DELETE_PRODUCT:
+    post:
+      tags: [Inventory]
+      summary: Delete a product
+      description: Soft-deletes a product by ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Product deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Orders ────────���────────────────────────────────��──────────────────────
+
+  /api/order/CREATE_ORDER:
+    post:
+      tags: [Orders]
+      summary: Create a new order
+      description: Places a new order. Typically called after cart checkout. The order starts in PENDING status.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: string
+                      quantity:
+                        type: integer
+                      price:
+                        type: number
+                        format: double
+                totalAmount:
+                  type: number
+                  format: double
+              required: [userId, businessId, items]
+      responses:
+        '200':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Order'
+
+  /api/order/RETRIEVE_ORDER:
+    post:
+      tags: [Orders]
+      summary: Retrieve orders
+      description: Returns orders filtered by userId, businessId, and/or storeId.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRetrieveRequest'
+      responses:
+        '200':
+          description: Order list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Order'
+
+  /api/order/UPDATE_ORDER:
+    post:
+      tags: [Orders]
+      summary: Update order status
+      description: |
+        Transitions an order to a new status. Valid transitions depend on current status.
+        Only the business owner (for CONFIRMED/PREPARING/READY/DISPATCHED/DECLINED) or the
+        buyer (for CANCELLED) can update the status.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateStatusRequest'
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Order'
+
+  # ── Cart ──���────────────────────────────────────────────────────────────���──
+
+  /api/cart/add:
+    post:
+      tags: [Cart]
+      summary: Add item to cart
+      description: Adds a product to the user's cart for a specific business/store.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                productId:
+                  type: string
+                quantity:
+                  type: integer
+                  default: 1
+              required: [userId, businessId, productId]
+      responses:
+        '200':
+          description: Item added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/cart/retrieve:
+    post:
+      tags: [Cart]
+      summary: Retrieve cart
+      description: Returns all items in the user's cart for a given business/store.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+              required: [userId, businessId]
+      responses:
+        '200':
+          description: Cart contents
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CartItem'
+
+  # ── Pricing ────────��─────────────────────────────��────────────────────────
+
+  /api/pricing/tier/create:
+    post:
+      tags: [Pricing]
+      summary: Create a price tier
+      description: Creates a volume-based price tier for a business. Used for quantity-based discounts.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                minQuantity:
+                  type: integer
+                maxQuantity:
+                  type: integer
+                  nullable: true
+                priceMultiplier:
+                  type: number
+                  format: double
+              required: [businessId, name, minQuantity, priceMultiplier]
+      responses:
+        '200':
+          description: Price tier created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/PriceTier'
+
+  /api/pricing/calculate:
+    post:
+      tags: [Pricing]
+      summary: Calculate price
+      description: Calculates the final price for a product considering tiers, schedules, customer groups, and promotions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                productId:
+                  type: string
+                quantity:
+                  type: integer
+                  default: 1
+                customerId:
+                  type: string
+                  nullable: true
+              required: [businessId, productId]
+      responses:
+        '200':
+          description: Calculated price
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: object
+                        properties:
+                          basePrice:
+                            type: number
+                            format: double
+                          finalPrice:
+                            type: number
+                            format: double
+                          discount:
+                            type: number
+                            format: double
+                          tierApplied:
+                            type: string
+                            nullable: true
+
+  # ── Storefront (Public) ───────────────────────────────────────────────────
+
+  /api/public/storefront/stores:
+    post:
+      tags: [Storefront]
+      summary: List storefront stores
+      description: Returns publicly visible stores. No authentication required. Used by customer-facing apps.
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  default: 1
+                pageSize:
+                  type: integer
+                  default: 20
+      responses:
+        '200':
+          description: Public store list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/StorefrontStore'
+
+  /api/public/storefront/products:
+    post:
+      tags: [Storefront]
+      summary: List storefront products
+      description: Returns publicly visible products for a store. No authentication required.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+                categoryId:
+                  type: string
+                  nullable: true
+                page:
+                  type: integer
+                  default: 1
+                pageSize:
+                  type: integer
+                  default: 20
+              required: [businessId]
+      responses:
+        '200':
+          description: Public product list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Product'
+
+  /api/public/storefront/categories:
+    post:
+      tags: [Storefront]
+      summary: List storefront categories
+      description: Returns product categories for a store. No authentication required.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Category list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Category'
+
+  /api/public/storefront/search:
+    post:
+      tags: [Storefront]
+      summary: Search storefront products
+      description: Full-text search across public product catalog. No authentication required.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                query:
+                  type: string
+                  description: Search query string
+                page:
+                  type: integer
+                  default: 1
+                pageSize:
+                  type: integer
+                  default: 20
+              required: [businessId, query]
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ── Marketplace ───────────────────────────────────────────────────────────
+
+  /api/marketplace/cart:
+    post:
+      tags: [Marketplace]
+      summary: Get marketplace cart
+      description: Returns the buyer's current marketplace cart contents.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+              required: [userId, businessId]
+      responses:
+        '200':
+          description: Cart contents
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CartItem'
+
+  /api/marketplace/cart/add:
+    post:
+      tags: [Marketplace]
+      summary: Add item to marketplace cart
+      description: Adds a product to the buyer's marketplace cart.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                productId:
+                  type: string
+                quantity:
+                  type: integer
+                  default: 1
+              required: [userId, businessId, productId]
+      responses:
+        '200':
+          description: Item added to cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketplace/checkout:
+    post:
+      tags: [Marketplace]
+      summary: Checkout marketplace cart
+      description: Converts the marketplace cart into an order. Validates stock availability and calculates final totals.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                paymentMethod:
+                  type: string
+                  nullable: true
+                deliveryAddress:
+                  type: string
+                  nullable: true
+              required: [userId, businessId]
+      responses:
+        '200':
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Order'
+
+  # ── Customer ──────────────────────────────────────────────────────────────
+
+  /api/customer/CREATE_CUSTOMER:
+    post:
+      tags: [Customer]
+      summary: Create a customer
+      description: Creates a customer record for a business. Used for CRM and order association.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                mobile:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Customer'
+
+  /api/customer/RETRIEVE_CUSTOMER:
+    post:
+      tags: [Customer]
+      summary: Retrieve customers
+      description: Returns all customers for a business.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Customer list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Customer'
