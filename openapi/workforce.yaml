@@ -1,0 +1,1054 @@
+paths:
+  # ── Employees ─────────────────────────────────────────────────────────────
+
+  /api/workforce/employee/create:
+    post:
+      tags: [Workforce]
+      summary: Create an employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                userId:
+                  type: string
+                  nullable: true
+                name:
+                  type: string
+                email:
+                  type: string
+                  nullable: true
+                mobile:
+                  type: string
+                  nullable: true
+                jobRoleId:
+                  type: string
+                  nullable: true
+                departmentId:
+                  type: string
+                  nullable: true
+                joiningDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                salary:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Employee created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/employee/update:
+    post:
+      tags: [Workforce]
+      summary: Update an employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+                mobile:
+                  type: string
+                  nullable: true
+                jobRoleId:
+                  type: string
+                  nullable: true
+                salary:
+                  type: number
+                  format: double
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Employee updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/employee/get:
+    post:
+      tags: [Workforce]
+      summary: Get an employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Employee details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/employee/list:
+    post:
+      tags: [Workforce]
+      summary: List employees for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                jobRoleId:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Employee list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/employee/delete:
+    post:
+      tags: [Workforce]
+      summary: Delete an employee record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Employee deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/employee/deactivate:
+    post:
+      tags: [Workforce]
+      summary: Deactivate an employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                reason:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Employee deactivated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/employee/reactivate:
+    post:
+      tags: [Workforce]
+      summary: Reactivate an employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Employee reactivated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Job Roles ─────────────────────────────────────────────────────────────
+
+  /api/workforce/job-role/create:
+    post:
+      tags: [Workforce]
+      summary: Create a job role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Job role created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/job-role/update:
+    post:
+      tags: [Workforce]
+      summary: Update a job role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Job role updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/job-role/get:
+    post:
+      tags: [Workforce]
+      summary: Get a job role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Job role details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/job-role/list:
+    post:
+      tags: [Workforce]
+      summary: List job roles for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Job role list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/job-role/delete:
+    post:
+      tags: [Workforce]
+      summary: Delete a job role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Job role deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Job Openings ──────────────────────────────────────────────────────────
+
+  /api/workforce/job/create:
+    post:
+      tags: [Workforce]
+      summary: Create a job opening
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                title:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                jobRoleId:
+                  type: string
+                  nullable: true
+                location:
+                  type: string
+                  nullable: true
+                salaryMin:
+                  type: number
+                  format: double
+                  nullable: true
+                salaryMax:
+                  type: number
+                  format: double
+                  nullable: true
+                isActive:
+                  type: boolean
+                  nullable: true
+              required: [businessId, title]
+      responses:
+        '200':
+          description: Job opening created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/job/update:
+    post:
+      tags: [Workforce]
+      summary: Update a job opening
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                isActive:
+                  type: boolean
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Job opening updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/job/get:
+    post:
+      tags: [Workforce]
+      summary: Get a job opening
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Job opening details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/job/list:
+    post:
+      tags: [Workforce]
+      summary: List job openings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                isActive:
+                  type: boolean
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Job opening list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/job/delete:
+    post:
+      tags: [Workforce]
+      summary: Delete a job opening
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Job opening deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/job/apply:
+    post:
+      tags: [Workforce]
+      summary: Apply for a job opening
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobId:
+                  type: string
+                applicantName:
+                  type: string
+                email:
+                  type: string
+                mobile:
+                  type: string
+                  nullable: true
+                resumeUrl:
+                  type: string
+                  nullable: true
+              required: [jobId, applicantName, email]
+      responses:
+        '200':
+          description: Application submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/job/applications:
+    post:
+      tags: [Workforce]
+      summary: List applications for a job opening
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobId:
+                  type: string
+              required: [jobId]
+      responses:
+        '200':
+          description: Application list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Attendance ────────────────────────────────────────────────────────────
+
+  /api/workforce/attendance/mark:
+    post:
+      tags: [Workforce]
+      summary: Mark employee attendance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: string
+                date:
+                  type: string
+                  format: date-time
+                status:
+                  type: string
+                  example: PRESENT
+                checkIn:
+                  type: string
+                  format: date-time
+                  nullable: true
+                checkOut:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [employeeId, date, status]
+      responses:
+        '200':
+          description: Attendance marked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/attendance/update:
+    post:
+      tags: [Workforce]
+      summary: Update attendance record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                status:
+                  type: string
+                  nullable: true
+                checkIn:
+                  type: string
+                  format: date-time
+                  nullable: true
+                checkOut:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Attendance updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/attendance/get:
+    post:
+      tags: [Workforce]
+      summary: Get attendance for an employee or date range
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+                startDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        '200':
+          description: Attendance records
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/attendance/report:
+    post:
+      tags: [Workforce]
+      summary: Generate attendance report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                month:
+                  type: integer
+                year:
+                  type: integer
+              required: [businessId, month, year]
+      responses:
+        '200':
+          description: Attendance report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/attendance/checkin:
+    post:
+      tags: [Workforce]
+      summary: Employee self check-in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: string
+                location:
+                  type: string
+                  nullable: true
+              required: [employeeId]
+      responses:
+        '200':
+          description: Checked in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/attendance/checkout:
+    post:
+      tags: [Workforce]
+      summary: Employee self check-out
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: string
+              required: [employeeId]
+      responses:
+        '200':
+          description: Checked out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Shifts ────────────────────────────────────────────────────────────────
+
+  /api/workforce/shift/create:
+    post:
+      tags: [Workforce]
+      summary: Create a shift
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                startTime:
+                  type: string
+                  example: "09:00"
+                endTime:
+                  type: string
+                  example: "17:00"
+              required: [businessId, name, startTime, endTime]
+      responses:
+        '200':
+          description: Shift created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/shift/update:
+    post:
+      tags: [Workforce]
+      summary: Update a shift
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                startTime:
+                  type: string
+                  nullable: true
+                endTime:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Shift updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/shift/get:
+    post:
+      tags: [Workforce]
+      summary: Get a shift
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Shift details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/shift/list:
+    post:
+      tags: [Workforce]
+      summary: List shifts for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Shift list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/shift/delete:
+    post:
+      tags: [Workforce]
+      summary: Delete a shift
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Shift deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/shift/assign:
+    post:
+      tags: [Workforce]
+      summary: Assign a shift to an employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shiftId:
+                  type: string
+                employeeId:
+                  type: string
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [shiftId, employeeId, startDate]
+      responses:
+        '200':
+          description: Shift assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/shift/schedule:
+    post:
+      tags: [Workforce]
+      summary: Get shift schedule for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+              required: [businessId, startDate, endDate]
+      responses:
+        '200':
+          description: Shift schedule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Commissions ───────────────────────────────────────────────────────────
+
+  /api/workforce/commission/create:
+    post:
+      tags: [Workforce]
+      summary: Create a commission rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                type:
+                  type: string
+                  example: PERCENTAGE
+                value:
+                  type: number
+                  format: double
+                jobRoleId:
+                  type: string
+                  nullable: true
+              required: [businessId, name, type, value]
+      responses:
+        '200':
+          description: Commission rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/commission/update:
+    post:
+      tags: [Workforce]
+      summary: Update a commission rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                value:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Commission rule updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/commission/get:
+    post:
+      tags: [Workforce]
+      summary: Get a commission rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Commission rule details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/commission/list:
+    post:
+      tags: [Workforce]
+      summary: List commission rules for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Commission rule list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/commission/delete:
+    post:
+      tags: [Workforce]
+      summary: Delete a commission rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Commission rule deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/commission/calculate:
+    post:
+      tags: [Workforce]
+      summary: Calculate commission for an employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: string
+                saleAmount:
+                  type: number
+                  format: double
+                  nullable: true
+                period:
+                  type: string
+                  nullable: true
+              required: [employeeId]
+      responses:
+        '200':
+          description: Commission calculation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/workforce/commission/report:
+    post:
+      tags: [Workforce]
+      summary: Get commission report for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                month:
+                  type: integer
+                  nullable: true
+                year:
+                  type: integer
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Commission report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

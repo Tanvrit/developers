@@ -1,0 +1,501 @@
+paths:
+  # ── Price Tiers ───────────────────────────────────────────────────────────
+
+  /api/pricing/tier/CREATE:
+    post:
+      tags: [Pricing]
+      summary: Create a price tier
+      description: Creates a volume-based price tier for a product.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                priceRuleId:
+                  type: string
+                  nullable: true
+                productId:
+                  type: string
+                minQuantity:
+                  type: integer
+                maxQuantity:
+                  type: integer
+                  nullable: true
+                unitPrice:
+                  type: number
+                  format: double
+                  nullable: true
+                discountPercent:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [productId, minQuantity]
+      responses:
+        '200':
+          description: Price tier created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/PriceTier'
+
+  /api/pricing/tier/RETRIEVE:
+    post:
+      tags: [Pricing]
+      summary: Retrieve price tiers
+      description: Returns tiers by id, productId, or priceRuleId.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                productId:
+                  type: string
+                  nullable: true
+                priceRuleId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Price tier(s)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/tier/UPDATE:
+    post:
+      tags: [Pricing]
+      summary: Update a price tier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                minQuantity:
+                  type: integer
+                  nullable: true
+                maxQuantity:
+                  type: integer
+                  nullable: true
+                unitPrice:
+                  type: number
+                  format: double
+                  nullable: true
+                discountPercent:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Price tier updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/tier/DELETE:
+    post:
+      tags: [Pricing]
+      summary: Delete a price tier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Price tier deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Price Schedules ───────────────────────────────────────────────────────
+
+  /api/pricing/schedule/CREATE:
+    post:
+      tags: [Pricing]
+      summary: Create a price schedule
+      description: Creates a time-bound price change (e.g. flash sale) for a product.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                scheduledPrice:
+                  type: number
+                  format: double
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+                scheduleType:
+                  type: string
+                  nullable: true
+              required: [productId, scheduledPrice, startDate, endDate]
+      responses:
+        '200':
+          description: Price schedule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/schedule/RETRIEVE:
+    post:
+      tags: [Pricing]
+      summary: Retrieve price schedules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                productId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Price schedule(s)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/schedule/UPDATE:
+    post:
+      tags: [Pricing]
+      summary: Update a price schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                scheduledPrice:
+                  type: number
+                  format: double
+                  nullable: true
+                startDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Price schedule updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/schedule/DELETE:
+    post:
+      tags: [Pricing]
+      summary: Delete a price schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Price schedule deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/schedule/ACTIVATE:
+    post:
+      tags: [Pricing]
+      summary: Activate due price schedules
+      description: Activates all price schedules whose startDate is now in the past.
+      responses:
+        '200':
+          description: Schedules activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/schedule/DEACTIVATE_EXPIRED:
+    post:
+      tags: [Pricing]
+      summary: Deactivate expired price schedules
+      description: Deactivates all price schedules whose endDate has passed.
+      responses:
+        '200':
+          description: Schedules deactivated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Customer Groups ───────────────────────────────────────────────────────
+
+  /api/pricing/customer-group/CREATE:
+    post:
+      tags: [Pricing]
+      summary: Create a customer group
+      description: Creates a customer group with an associated discount percentage.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                discountPercent:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Customer group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/customer-group/RETRIEVE:
+    post:
+      tags: [Pricing]
+      summary: Retrieve customer group(s)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Customer group(s)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/customer-group/UPDATE:
+    post:
+      tags: [Pricing]
+      summary: Update a customer group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                discountPercent:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id, businessId]
+      responses:
+        '200':
+          description: Customer group updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/customer-group/DELETE:
+    post:
+      tags: [Pricing]
+      summary: Delete a customer group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+              required: [id, businessId]
+      responses:
+        '200':
+          description: Customer group deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/customer-group/BUSINESS:
+    post:
+      tags: [Pricing]
+      summary: List customer groups for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Customer group list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/pricing/customer-group/DEFAULT:
+    post:
+      tags: [Pricing]
+      summary: Get default customer group for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Default customer group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Price Calculator ──────────────────────────────────────────────────────
+
+  /api/pricing/calculate/:
+    post:
+      tags: [Pricing]
+      summary: Calculate final price
+      description: Calculates the final price for a product considering tiers, schedules, customer groups, and promotions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                quantity:
+                  type: integer
+                  default: 1
+                customerId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+              required: [productId, businessId]
+      responses:
+        '200':
+          description: Calculated price
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: object
+                        properties:
+                          basePrice:
+                            type: number
+                            format: double
+                          finalPrice:
+                            type: number
+                            format: double
+                          discount:
+                            type: number
+                            format: double
+                          tierApplied:
+                            type: string
+                            nullable: true
+
+components:
+  schemas:
+    PriceTier:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        minQuantity:
+          type: integer
+        maxQuantity:
+          type: integer
+          nullable: true
+        unitPrice:
+          type: number
+          format: double
+          nullable: true
+        discountPercent:
+          type: number
+          format: double
+          nullable: true

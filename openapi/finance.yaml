@@ -1,0 +1,1618 @@
+paths:
+  # ── Payments ──────────────────────────────────────────────────────────────
+
+  /api/payment/create:
+    post:
+      tags: [Finance]
+      summary: Create a payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                amount:
+                  type: number
+                  format: double
+                currency:
+                  type: string
+                  nullable: true
+                method:
+                  type: string
+                  nullable: true
+                customerId:
+                  type: string
+                  nullable: true
+              required: [businessId, amount]
+      responses:
+        '200':
+          description: Payment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payment/retrieve:
+    post:
+      tags: [Finance]
+      summary: Retrieve a payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                orderId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Payment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payment/update:
+    post:
+      tags: [Finance]
+      summary: Update payment status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                status:
+                  type: string
+                  example: SUCCESS
+              required: [id, status]
+      responses:
+        '200':
+          description: Payment updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payment/FIND:
+    post:
+      tags: [Finance]
+      summary: Find payments by criteria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+                startDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        '200':
+          description: Payment list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payment/delete:
+    post:
+      tags: [Finance]
+      summary: Delete a payment record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Payment deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payment/webhook/razorpay:
+    post:
+      tags: [Finance]
+      summary: Razorpay payment webhook
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Payouts ───────────────────────────────────────────────────────────────
+
+  /api/payout/account/create:
+    post:
+      tags: [Finance]
+      summary: Create a payout account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                accountType:
+                  type: string
+                  example: BANK
+                accountNumber:
+                  type: string
+                  nullable: true
+                ifsc:
+                  type: string
+                  nullable: true
+                upi:
+                  type: string
+                  nullable: true
+              required: [businessId, accountType]
+      responses:
+        '200':
+          description: Payout account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/account/retrieve:
+    post:
+      tags: [Finance]
+      summary: Retrieve payout account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Payout account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/account/update:
+    post:
+      tags: [Finance]
+      summary: Update a payout account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                accountNumber:
+                  type: string
+                  nullable: true
+                upi:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Payout account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/account/delete:
+    post:
+      tags: [Finance]
+      summary: Delete a payout account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Payout account deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/schedule/create:
+    post:
+      tags: [Finance]
+      summary: Create a payout schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                frequency:
+                  type: string
+                  example: WEEKLY
+                dayOfWeek:
+                  type: integer
+                  nullable: true
+              required: [businessId, frequency]
+      responses:
+        '200':
+          description: Payout schedule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/schedule/retrieve:
+    post:
+      tags: [Finance]
+      summary: Retrieve payout schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Payout schedule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/schedule/update:
+    post:
+      tags: [Finance]
+      summary: Update a payout schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                frequency:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Payout schedule updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/schedule/delete:
+    post:
+      tags: [Finance]
+      summary: Delete a payout schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Payout schedule deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/batch/create:
+    post:
+      tags: [Finance]
+      summary: Create a payout batch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                payoutAccountId:
+                  type: string
+                amount:
+                  type: number
+                  format: double
+              required: [businessId, payoutAccountId, amount]
+      responses:
+        '200':
+          description: Payout batch created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/batch/retrieve:
+    post:
+      tags: [Finance]
+      summary: Retrieve payout batches
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Payout batch list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/batch/update:
+    post:
+      tags: [Finance]
+      summary: Update a payout batch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                status:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Payout batch updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payout/batch/delete:
+    post:
+      tags: [Finance]
+      summary: Delete a payout batch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Payout batch deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Wallet ────────────────────────────────────────────────────────────────
+
+  /api/wallet/create:
+    post:
+      tags: [Finance]
+      summary: Create a wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ownerId:
+                  type: string
+                ownerType:
+                  type: string
+                  example: USER
+                currency:
+                  type: string
+                  nullable: true
+              required: [ownerId, ownerType]
+      responses:
+        '200':
+          description: Wallet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/wallet/retrieve:
+    post:
+      tags: [Finance]
+      summary: Retrieve a wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ownerId:
+                  type: string
+                ownerType:
+                  type: string
+              required: [ownerId, ownerType]
+      responses:
+        '200':
+          description: Wallet details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/wallet/retrieveForBusiness:
+    post:
+      tags: [Finance]
+      summary: Retrieve wallet for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Business wallet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/wallet/balance:
+    post:
+      tags: [Finance]
+      summary: Get wallet balance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ownerId:
+                  type: string
+                ownerType:
+                  type: string
+              required: [ownerId, ownerType]
+      responses:
+        '200':
+          description: Wallet balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/wallet/addFunds:
+    post:
+      tags: [Finance]
+      summary: Add funds to a wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ownerId:
+                  type: string
+                ownerType:
+                  type: string
+                amount:
+                  type: number
+                  format: double
+                reference:
+                  type: string
+                  nullable: true
+              required: [ownerId, ownerType, amount]
+      responses:
+        '200':
+          description: Funds added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/wallet/withdrawFunds:
+    post:
+      tags: [Finance]
+      summary: Withdraw funds from a wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ownerId:
+                  type: string
+                ownerType:
+                  type: string
+                amount:
+                  type: number
+                  format: double
+              required: [ownerId, ownerType, amount]
+      responses:
+        '200':
+          description: Funds withdrawn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/wallet/transfer:
+    post:
+      tags: [Finance]
+      summary: Transfer funds between wallets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fromOwnerId:
+                  type: string
+                fromOwnerType:
+                  type: string
+                toOwnerId:
+                  type: string
+                toOwnerType:
+                  type: string
+                amount:
+                  type: number
+                  format: double
+              required: [fromOwnerId, fromOwnerType, toOwnerId, toOwnerType, amount]
+      responses:
+        '200':
+          description: Transfer completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/wallet/update:
+    post:
+      tags: [Finance]
+      summary: Update wallet metadata
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                currency:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Wallet updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/wallet/delete:
+    post:
+      tags: [Finance]
+      summary: Delete a wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Wallet deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Transactions ──────────────────────────────────────────────────────────
+
+  /api/transactions/create:
+    post:
+      tags: [Finance]
+      summary: Create a transaction record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                amount:
+                  type: number
+                  format: double
+                type:
+                  type: string
+                  example: SALE
+                reference:
+                  type: string
+                  nullable: true
+              required: [businessId, amount, type]
+      responses:
+        '200':
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/transactions/retrieve:
+    post:
+      tags: [Finance]
+      summary: Retrieve transaction(s)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+                type:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/transactions/update:
+    post:
+      tags: [Finance]
+      summary: Update transaction status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                status:
+                  type: string
+              required: [id, status]
+      responses:
+        '200':
+          description: Transaction updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/transactions/delete:
+    post:
+      tags: [Finance]
+      summary: Delete a transaction record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Transaction deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/transactions/search:
+    post:
+      tags: [Finance]
+      summary: Search transactions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                query:
+                  type: string
+                  nullable: true
+                startDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Matching transactions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/transactions/reconcile:
+    post:
+      tags: [Finance]
+      summary: Reconcile a transaction (async)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Reconciliation started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/transactions/processPayment:
+    post:
+      tags: [Finance]
+      summary: Process a payment transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                amount:
+                  type: number
+                  format: double
+                currency:
+                  type: string
+                  nullable: true
+                paymentMethodId:
+                  type: string
+                  nullable: true
+              required: [businessId, amount]
+      responses:
+        '200':
+          description: Payment processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/transactions/processRefund:
+    post:
+      tags: [Finance]
+      summary: Process a refund transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transactionId:
+                  type: string
+                amount:
+                  type: number
+                  format: double
+                  nullable: true
+                reason:
+                  type: string
+                  nullable: true
+              required: [transactionId]
+      responses:
+        '200':
+          description: Refund processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/transactions/list:
+    get:
+      tags: [Finance]
+      summary: List transactions (paginated)
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated transaction list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /api/transactions/export:
+    post:
+      tags: [Finance]
+      summary: Export transactions to CSV
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                startDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Export URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Invoices ──────────────────────────────────────────────────────────────
+
+  /api/invoice/generateCustomerInvoice:
+    post:
+      tags: [Finance]
+      summary: Generate a customer invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                customerId:
+                  type: string
+                businessId:
+                  type: string
+              required: [orderId, customerId, businessId]
+      responses:
+        '200':
+          description: Invoice generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/invoice/retrieve:
+    post:
+      tags: [Finance]
+      summary: Retrieve invoice(s)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+                orderId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Invoice list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/invoice/retriveSingleInvoice:
+    post:
+      tags: [Finance]
+      summary: Retrieve a single invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Invoice details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/invoice/list:
+    get:
+      tags: [Finance]
+      summary: List invoices (paginated)
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: storeId
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated invoice list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ── Tax Configuration ─────────────────────────────────────────────────────
+
+  /api/tax/config/CREATE:
+    post:
+      tags: [Finance]
+      summary: Create tax configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                country:
+                  type: string
+                taxRate:
+                  type: number
+                  format: double
+                taxType:
+                  type: string
+                  nullable: true
+              required: [businessId, country, taxRate]
+      responses:
+        '200':
+          description: Tax config created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/tax/config/RETRIEVE:
+    post:
+      tags: [Finance]
+      summary: Retrieve tax configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Tax configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/tax/config/UPDATE:
+    post:
+      tags: [Finance]
+      summary: Update tax configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                taxRate:
+                  type: number
+                  format: double
+                  nullable: true
+                taxType:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Tax config updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/tax/config/DELETE:
+    post:
+      tags: [Finance]
+      summary: Delete tax configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Tax config deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Sales ─────────────────────────────────────────────────────────────────
+
+  /api/sale/create:
+    post:
+      tags: [Finance]
+      summary: Create a sale record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                orderId:
+                  type: string
+                  nullable: true
+                amount:
+                  type: number
+                  format: double
+                customerId:
+                  type: string
+                  nullable: true
+              required: [businessId, amount]
+      responses:
+        '200':
+          description: Sale created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/sale/retrieve:
+    post:
+      tags: [Finance]
+      summary: Retrieve sale(s)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Sale details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/sale/update:
+    post:
+      tags: [Finance]
+      summary: Update a sale record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                amount:
+                  type: number
+                  format: double
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Sale updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/sale/delete:
+    post:
+      tags: [Finance]
+      summary: Delete a sale record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Sale deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Currency ──────────────────────────────────────────────────────────────
+
+  /api/currency/create:
+    post:
+      tags: [Finance]
+      summary: Create a currency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  example: USD
+                name:
+                  type: string
+                symbol:
+                  type: string
+              required: [code, name, symbol]
+      responses:
+        '200':
+          description: Currency created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/update:
+    post:
+      tags: [Finance]
+      summary: Update a currency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                symbol:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Currency updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/delete:
+    post:
+      tags: [Finance]
+      summary: Delete a currency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Currency deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/find:
+    post:
+      tags: [Finance]
+      summary: Find a currency by code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+              required: [code]
+      responses:
+        '200':
+          description: Currency details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/list:
+    post:
+      tags: [Finance]
+      summary: List all currencies
+      responses:
+        '200':
+          description: Currency list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/retrieve:
+    post:
+      tags: [Finance]
+      summary: Retrieve all currencies
+      responses:
+        '200':
+          description: Currency list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/setup:
+    post:
+      tags: [Finance]
+      summary: Setup default currencies
+      responses:
+        '200':
+          description: Currencies set up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Currency Exchange ─────────────────────────────────────────────────────
+
+  /api/currency/exchange/convert:
+    post:
+      tags: [Finance]
+      summary: Convert amount between currencies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: double
+                from:
+                  type: string
+                to:
+                  type: string
+              required: [amount, from, to]
+      responses:
+        '200':
+          description: Converted amount
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/exchange/createRate:
+    post:
+      tags: [Finance]
+      summary: Create an exchange rate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:
+                  type: string
+                to:
+                  type: string
+                rate:
+                  type: number
+                  format: double
+              required: [from, to, rate]
+      responses:
+        '200':
+          description: Exchange rate created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/exchange/updateRate:
+    post:
+      tags: [Finance]
+      summary: Update an exchange rate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                rate:
+                  type: number
+                  format: double
+              required: [id, rate]
+      responses:
+        '200':
+          description: Exchange rate updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/exchange/deleteRate:
+    post:
+      tags: [Finance]
+      summary: Delete an exchange rate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Exchange rate deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/exchange/getRate:
+    post:
+      tags: [Finance]
+      summary: Get exchange rate between two currencies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:
+                  type: string
+                to:
+                  type: string
+              required: [from, to]
+      responses:
+        '200':
+          description: Exchange rate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/exchange/listRates:
+    post:
+      tags: [Finance]
+      summary: List all exchange rates
+      responses:
+        '200':
+          description: Exchange rate list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/exchange/createConfig:
+    post:
+      tags: [Finance]
+      summary: Create multi-currency configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                baseCurrency:
+                  type: string
+                enabledCurrencies:
+                  type: array
+                  items:
+                    type: string
+              required: [businessId, baseCurrency]
+      responses:
+        '200':
+          description: Multi-currency config created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/exchange/updateConfig:
+    post:
+      tags: [Finance]
+      summary: Update multi-currency configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                baseCurrency:
+                  type: string
+                  nullable: true
+                enabledCurrencies:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Multi-currency config updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/currency/exchange/getConfig:
+    post:
+      tags: [Finance]
+      summary: Get multi-currency configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Multi-currency config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

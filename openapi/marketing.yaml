@@ -1,0 +1,1239 @@
+paths:
+  # ── Marketing Campaigns (AI-driven) ──────────────────────────────────────
+
+  /api/marketing/campaign/create:
+    post:
+      tags: [Marketing]
+      summary: Create a marketing campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                goal:
+                  type: string
+                  nullable: true
+                targetAudience:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/campaign/{id}:
+    get:
+      tags: [Marketing]
+      summary: Retrieve a marketing campaign
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Campaign details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/campaign/list:
+    post:
+      tags: [Marketing]
+      summary: List marketing campaigns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                status:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Campaign list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/campaign/{id}/analytics:
+    get:
+      tags: [Marketing]
+      summary: Get campaign analytics
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Campaign analytics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/insight/upload:
+    post:
+      tags: [Marketing]
+      summary: Upload business insight for AI marketing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                content:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Insight uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/config/save:
+    post:
+      tags: [Marketing]
+      summary: Save marketing (brand) config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                brandVoice:
+                  type: string
+                  nullable: true
+                targetAudience:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Config saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/config/{businessId}:
+    get:
+      tags: [Marketing]
+      summary: Get marketing brand config
+      parameters:
+        - in: path
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Brand config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/content/generate:
+    post:
+      tags: [Marketing]
+      summary: Generate marketing content via AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                campaignId:
+                  type: string
+                platform:
+                  type: string
+                  example: INSTAGRAM
+              required: [campaignId, platform]
+      responses:
+        '200':
+          description: Generated content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/content/list:
+    post:
+      tags: [Marketing]
+      summary: List generated marketing content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Content list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/content/{id}/approve:
+    post:
+      tags: [Marketing]
+      summary: Approve generated marketing content
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Content approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/content/{id}/reject:
+    post:
+      tags: [Marketing]
+      summary: Reject generated marketing content
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              required: [reason]
+      responses:
+        '200':
+          description: Content rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/content/{id}:
+    put:
+      tags: [Marketing]
+      summary: Edit generated marketing content
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                primaryText:
+                  type: string
+                  nullable: true
+                headline:
+                  type: string
+                  nullable: true
+                callToAction:
+                  type: string
+                  nullable: true
+                hashtags:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Content updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/content/{id}/schedule:
+    post:
+      tags: [Marketing]
+      summary: Schedule marketing content for publishing
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                publishAt:
+                  type: string
+                  format: date-time
+                platform:
+                  type: string
+                  nullable: true
+              required: [publishAt]
+      responses:
+        '200':
+          description: Content scheduled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/content/build-prompt:
+    post:
+      tags: [Marketing]
+      summary: Build LLM prompt for local content generation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                campaignId:
+                  type: string
+                platform:
+                  type: string
+              required: [campaignId, platform]
+      responses:
+        '200':
+          description: Prompt built
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/content/finalize:
+    post:
+      tags: [Marketing]
+      summary: Finalize locally generated marketing content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                campaignId:
+                  type: string
+                generatedText:
+                  type: string
+                idempotencyKey:
+                  type: string
+              required: [campaignId, generatedText, idempotencyKey]
+      responses:
+        '200':
+          description: Content finalized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/marketing/audit/{businessId}:
+    get:
+      tags: [Marketing]
+      summary: Get marketing audit log
+      parameters:
+        - in: path
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            nullable: true
+      responses:
+        '200':
+          description: Audit log
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Campaigns (CRM-style) ─────────────────────────────────────────────────
+
+  /api/campaign/create:
+    post:
+      tags: [Marketing]
+      summary: Create a campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                type:
+                  type: string
+                  example: EMAIL
+                description:
+                  type: string
+                  nullable: true
+              required: [businessId, name, type]
+      responses:
+        '200':
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/campaign/update:
+    post:
+      tags: [Marketing]
+      summary: Update a campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+              required: [id, businessId]
+      responses:
+        '200':
+          description: Campaign updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/campaign/retrieve:
+    post:
+      tags: [Marketing]
+      summary: Retrieve campaigns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Campaign list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/campaign/launch:
+    post:
+      tags: [Marketing]
+      summary: Launch a campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+              required: [id, businessId]
+      responses:
+        '200':
+          description: Campaign launched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/campaign/list:
+    get:
+      tags: [Marketing]
+      summary: List campaigns (paginated)
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated campaign list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /api/campaign/create-segment:
+    post:
+      tags: [Marketing]
+      summary: Create a campaign audience segment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                criteriaType:
+                  type: string
+                criteriaOperator:
+                  type: string
+                criteriaValue:
+                  type: string
+              required: [businessId, name, criteriaType, criteriaOperator, criteriaValue]
+      responses:
+        '200':
+          description: Segment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/campaign/retrieve-segments:
+    post:
+      tags: [Marketing]
+      summary: Retrieve campaign segments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                  nullable: true
+                campaignId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Segment list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Email Marketing ───────────────────────────────────────────────────────
+
+  /api/email/marketing/templates/create:
+    post:
+      tags: [Marketing]
+      summary: Create an email marketing template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                subject:
+                  type: string
+                body:
+                  type: string
+              required: [businessId, name, subject, body]
+      responses:
+        '200':
+          description: Template created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/templates/update:
+    post:
+      tags: [Marketing]
+      summary: Update an email marketing template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                subject:
+                  type: string
+                  nullable: true
+                body:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Template updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/templates/retrieve:
+    post:
+      tags: [Marketing]
+      summary: Retrieve email marketing templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Template list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/templates/delete:
+    post:
+      tags: [Marketing]
+      summary: Delete an email marketing template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Template deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/campaigns/create:
+    post:
+      tags: [Marketing]
+      summary: Create an email marketing campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                templateId:
+                  type: string
+                segmentId:
+                  type: string
+                  nullable: true
+                scheduledAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [businessId, name, templateId]
+      responses:
+        '200':
+          description: Email campaign created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/campaigns/send:
+    post:
+      tags: [Marketing]
+      summary: Send an email marketing campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Email campaign sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/campaigns/retrieve:
+    post:
+      tags: [Marketing]
+      summary: Retrieve email marketing campaigns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Email campaign list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/campaigns/stats:
+    post:
+      tags: [Marketing]
+      summary: Get email campaign statistics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Campaign stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/campaigns/cancel:
+    post:
+      tags: [Marketing]
+      summary: Cancel an email marketing campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Campaign cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/subscribers/subscribe:
+    post:
+      tags: [Marketing]
+      summary: Subscribe an email to marketing list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                email:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+              required: [businessId, email]
+      responses:
+        '200':
+          description: Subscribed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/subscribers/unsubscribe:
+    post:
+      tags: [Marketing]
+      summary: Unsubscribe an email from marketing list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                email:
+                  type: string
+              required: [businessId, email]
+      responses:
+        '200':
+          description: Unsubscribed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/marketing/subscribers/retrieve:
+    post:
+      tags: [Marketing]
+      summary: Retrieve marketing subscribers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Subscriber list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Email (transactional) ─────────────────────────────────────────────────
+
+  /api/email/send:
+    post:
+      tags: [Marketing]
+      summary: Send a transactional email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                to:
+                  type: string
+                subject:
+                  type: string
+                body:
+                  type: string
+                templateId:
+                  type: string
+                  nullable: true
+                variables:
+                  type: object
+                  nullable: true
+              required: [to, subject, body]
+      responses:
+        '200':
+          description: Email sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/templates/save:
+    post:
+      tags: [Marketing]
+      summary: Save an email template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                subject:
+                  type: string
+                body:
+                  type: string
+                businessId:
+                  type: string
+                  nullable: true
+              required: [name, subject, body]
+      responses:
+        '200':
+          description: Template saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/templates/retrieve:
+    post:
+      tags: [Marketing]
+      summary: Retrieve email templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Template list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/templates/delete:
+    post:
+      tags: [Marketing]
+      summary: Delete an email template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Template deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/email/logs/retrieve:
+    post:
+      tags: [Marketing]
+      summary: Retrieve email send logs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                  nullable: true
+                to:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Email logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Promotions ────────────────────────────────────────────────────────────
+
+  /api/promotion/banners/create:
+    post:
+      tags: [Marketing]
+      summary: Create a promotional banner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                title:
+                  type: string
+                imageUrl:
+                  type: string
+                  nullable: true
+                linkUrl:
+                  type: string
+                  nullable: true
+                isActive:
+                  type: boolean
+                  nullable: true
+              required: [businessId, title]
+      responses:
+        '200':
+          description: Banner created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/promotion/banners/update:
+    post:
+      tags: [Marketing]
+      summary: Update a promotional banner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                isActive:
+                  type: boolean
+                  nullable: true
+              required: [id, businessId]
+      responses:
+        '200':
+          description: Banner updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/promotion/banners/retrieve:
+    post:
+      tags: [Marketing]
+      summary: Retrieve promotional banners
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                  nullable: true
+                id:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Banner list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/promotion/banners/delete:
+    post:
+      tags: [Marketing]
+      summary: Delete a promotional banner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+              required: [id, businessId]
+      responses:
+        '200':
+          description: Banner deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/promotion/popups/create:
+    post:
+      tags: [Marketing]
+      summary: Create a popup promotion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                title:
+                  type: string
+                content:
+                  type: string
+                  nullable: true
+                trigger:
+                  type: string
+                  nullable: true
+                isActive:
+                  type: boolean
+                  nullable: true
+              required: [businessId, title]
+      responses:
+        '200':
+          description: Popup created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/promotion/popups/update:
+    post:
+      tags: [Marketing]
+      summary: Update a popup promotion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                isActive:
+                  type: boolean
+                  nullable: true
+              required: [id, businessId]
+      responses:
+        '200':
+          description: Popup updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/promotion/popups/retrieve:
+    post:
+      tags: [Marketing]
+      summary: Retrieve popup promotions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Popup list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/promotion/popups/delete:
+    post:
+      tags: [Marketing]
+      summary: Delete a popup promotion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+              required: [id, businessId]
+      responses:
+        '200':
+          description: Popup deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

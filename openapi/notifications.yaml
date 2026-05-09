@@ -1,0 +1,687 @@
+paths:
+  # ── Notifications ─────────────────────────────────────────────────────────
+
+  /api/notification/send:
+    post:
+      tags: [Notifications]
+      summary: Send a notification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+                title:
+                  type: string
+                body:
+                  type: string
+                type:
+                  type: string
+                  nullable: true
+                data:
+                  type: object
+                  nullable: true
+              required: [title, body]
+      responses:
+        '200':
+          description: Notification sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/retrieve:
+    post:
+      tags: [Notifications]
+      summary: Retrieve notifications for a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                isRead:
+                  type: boolean
+                  nullable: true
+              required: [userId]
+      responses:
+        '200':
+          description: Notification list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/retrieve-business:
+    post:
+      tags: [Notifications]
+      summary: Retrieve notifications for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Business notification list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/accept-connection:
+    post:
+      tags: [Notifications]
+      summary: Accept a connection request via notification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notificationId:
+                  type: string
+              required: [notificationId]
+      responses:
+        '200':
+          description: Connection accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/mark-as-read:
+    post:
+      tags: [Notifications]
+      summary: Mark a notification as read
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notificationId:
+                  type: string
+              required: [notificationId]
+      responses:
+        '200':
+          description: Notification marked read
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/delete:
+    post:
+      tags: [Notifications]
+      summary: Delete a notification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notificationId:
+                  type: string
+              required: [notificationId]
+      responses:
+        '200':
+          description: Notification deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Notification Config ───────────────────────────────────────────────────
+
+  /api/notification/config/create:
+    post:
+      tags: [Notifications]
+      summary: Create notification config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                provider:
+                  type: string
+                  example: FIREBASE
+                config:
+                  type: object
+              required: [businessId, provider, config]
+      responses:
+        '200':
+          description: Config created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/config/update:
+    post:
+      tags: [Notifications]
+      summary: Update notification config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                config:
+                  type: object
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Config updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/config/retrieve:
+    post:
+      tags: [Notifications]
+      summary: Retrieve notification config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Notification config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/config/delete:
+    post:
+      tags: [Notifications]
+      summary: Delete notification config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Config deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Notification Preferences ──────────────────────────────────────────────
+
+  /api/notification/preferences/create:
+    post:
+      tags: [Notifications]
+      summary: Create notification preferences for a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                emailEnabled:
+                  type: boolean
+                  nullable: true
+                pushEnabled:
+                  type: boolean
+                  nullable: true
+                smsEnabled:
+                  type: boolean
+                  nullable: true
+              required: [userId]
+      responses:
+        '200':
+          description: Preferences created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/preferences/update:
+    post:
+      tags: [Notifications]
+      summary: Update notification preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                emailEnabled:
+                  type: boolean
+                  nullable: true
+                pushEnabled:
+                  type: boolean
+                  nullable: true
+                smsEnabled:
+                  type: boolean
+                  nullable: true
+              required: [userId]
+      responses:
+        '200':
+          description: Preferences updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/preferences/retrieve:
+    post:
+      tags: [Notifications]
+      summary: Retrieve notification preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: User preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/preferences/channels/create:
+    post:
+      tags: [Notifications]
+      summary: Create a notification channel preference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                channel:
+                  type: string
+                  example: EMAIL
+                notificationType:
+                  type: string
+                enabled:
+                  type: boolean
+              required: [userId, channel, notificationType, enabled]
+      responses:
+        '200':
+          description: Channel preference created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/preferences/channels/update:
+    post:
+      tags: [Notifications]
+      summary: Update a notification channel preference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                channel:
+                  type: string
+                notificationType:
+                  type: string
+                enabled:
+                  type: boolean
+              required: [userId, channel, notificationType, enabled]
+      responses:
+        '200':
+          description: Channel preference updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/preferences/channels/retrieve:
+    post:
+      tags: [Notifications]
+      summary: Retrieve notification channel preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Channel preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/preferences/channels/delete:
+    post:
+      tags: [Notifications]
+      summary: Delete a notification channel preference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                channel:
+                  type: string
+                notificationType:
+                  type: string
+              required: [userId, channel, notificationType]
+      responses:
+        '200':
+          description: Channel preference deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Notification Templates ────────────────────────────────────────────────
+
+  /api/notification/template/create:
+    post:
+      tags: [Notifications]
+      summary: Create a notification template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                type:
+                  type: string
+                  example: PUSH
+                title:
+                  type: string
+                body:
+                  type: string
+                variables:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+              required: [businessId, name, type, title, body]
+      responses:
+        '200':
+          description: Template created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/template/update:
+    post:
+      tags: [Notifications]
+      summary: Update a notification template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                body:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Template updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/template/retrieve:
+    post:
+      tags: [Notifications]
+      summary: Retrieve notification templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Template list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/template/delete:
+    post:
+      tags: [Notifications]
+      summary: Delete a notification template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Template deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/template/render:
+    post:
+      tags: [Notifications]
+      summary: Render a notification template with variables
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                variables:
+                  type: object
+                  additionalProperties:
+                    type: string
+              required: [id]
+      responses:
+        '200':
+          description: Rendered template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/notification/template/preview:
+    post:
+      tags: [Notifications]
+      summary: Preview a notification template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Template preview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Live Updates ──────────────────────────────────────────────────────────
+
+  /api/live/broadcast:
+    post:
+      tags: [Notifications]
+      summary: Broadcast a live update to gathering attendees
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                title:
+                  type: string
+                body:
+                  type: string
+                  nullable: true
+              required: [gatheringId, title]
+      responses:
+        '200':
+          description: Update broadcast
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/live/wedding:
+    post:
+      tags: [Notifications]
+      summary: Get live updates for a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Live updates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/live/active:
+    post:
+      tags: [Notifications]
+      summary: Get active live updates for a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Active live updates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/live/delete:
+    post:
+      tags: [Notifications]
+      summary: Delete a live update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                updateId:
+                  type: string
+              required: [updateId]
+      responses:
+        '200':
+          description: Update deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

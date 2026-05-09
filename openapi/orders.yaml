@@ -1,0 +1,1341 @@
+paths:
+  # ── Orders ────────────────────────────────────────────────────────────────
+
+  /api/order/CREATE_ORDER:
+    post:
+      tags: [Orders]
+      summary: Create a new order
+      description: Places a new order. Starts in PENDING status.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+                orderId:
+                  type: string
+                  nullable: true
+                orderItemIds:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+                addressId:
+                  type: string
+                  nullable: true
+                deviceId:
+                  type: string
+                  nullable: true
+              required: [userId, businessId]
+      responses:
+        '200':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Order'
+
+  /api/order/RETRIEVE_ORDER:
+    post:
+      tags: [Orders]
+      summary: Retrieve orders
+      description: Returns orders filtered by userId, businessId, storeId, or combinations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+                storeId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Order list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Order'
+
+  /api/order/UPDATE_ORDER:
+    post:
+      tags: [Orders]
+      summary: Update order status or fields
+      description: Updates an order with state-machine enforcement for status transitions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                status:
+                  type: string
+                  nullable: true
+                  enum: [PENDING, CONFIRMED, PREPARING, READY, DISPATCHED, DELIVERED, CANCELLED, DECLINED]
+                reason:
+                  type: string
+                  nullable: true
+                reasonDescription:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Order'
+
+  /api/order/DELETE_ORDER:
+    post:
+      tags: [Orders]
+      summary: Cancel an order
+      description: Cancels an order with reason "OTHER".
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Order cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/order/CONFIRM_ORDER:
+    post:
+      tags: [Orders]
+      summary: Confirm an order
+      description: Transitions an order to CONFIRMED status.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+              required: [orderId]
+      responses:
+        '200':
+          description: Order confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/order/UPDATE_STATUS:
+    post:
+      tags: [Orders]
+      summary: Update order status (admin)
+      description: Generic status update for admin/tooling use.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                status:
+                  type: string
+                  enum: [PENDING, CONFIRMED, PREPARING, READY, DISPATCHED, DELIVERED, CANCELLED, DECLINED]
+              required: [orderId, status]
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/order/list:
+    get:
+      tags: [Orders]
+      summary: List orders (paginated)
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated order list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ── Cart ──────────────────────────────────────────────────────────────────
+
+  /api/cart/add:
+    post:
+      tags: [Orders]
+      summary: Add item to cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                productId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+                quantity:
+                  type: integer
+                  default: 1
+                price:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [userId, businessId, productId]
+      responses:
+        '200':
+          description: Item added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/cart/update:
+    post:
+      tags: [Orders]
+      summary: Update cart item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                id:
+                  type: string
+                quantity:
+                  type: integer
+                price:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [userId, businessId, id]
+      responses:
+        '200':
+          description: Cart item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/cart/remove:
+    post:
+      tags: [Orders]
+      summary: Remove cart item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cartItemId:
+                  type: string
+              required: [cartItemId]
+      responses:
+        '200':
+          description: Item removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/cart/retrieve:
+    post:
+      tags: [Orders]
+      summary: Retrieve cart items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+              required: [userId, businessId]
+      responses:
+        '200':
+          description: Cart contents
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CartItem'
+
+  /api/cart/clear:
+    post:
+      tags: [Orders]
+      summary: Clear entire cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+              required: [userId, businessId]
+      responses:
+        '200':
+          description: Cart cleared
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/cart/total:
+    post:
+      tags: [Orders]
+      summary: Get cart total
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+              required: [userId, businessId]
+      responses:
+        '200':
+          description: Cart total
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: object
+                        properties:
+                          total:
+                            type: number
+                            format: double
+                          itemCount:
+                            type: integer
+
+  # ── Fulfillment ───────────────────────────────────────────────────────────
+
+  /api/fulfillment/CREATE_FULFILLMENT:
+    post:
+      tags: [Orders]
+      summary: Create a fulfillment record
+      description: Creates a fulfillment workflow for an order.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+                items:
+                  type: array
+                  items:
+                    type: object
+                shippingAddress:
+                  type: string
+                  nullable: true
+                assignedTo:
+                  type: string
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+              required: [orderId, businessId]
+      responses:
+        '200':
+          description: Fulfillment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/fulfillment/RETRIEVE_FULFILLMENT:
+    post:
+      tags: [Orders]
+      summary: Retrieve fulfillments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Fulfillment list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/fulfillment/UPDATE_FULFILLMENT:
+    post:
+      tags: [Orders]
+      summary: Update fulfillment metadata
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                trackingNumber:
+                  type: string
+                  nullable: true
+                carrier:
+                  type: string
+                  nullable: true
+                weightKg:
+                  type: number
+                  format: double
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Fulfillment updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/fulfillment/ASSIGN_PICKER:
+    post:
+      tags: [Orders]
+      summary: Assign picker to fulfillment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                assignedTo:
+                  type: string
+              required: [id, assignedTo]
+      responses:
+        '200':
+          description: Picker assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/fulfillment/PICK_ITEMS:
+    post:
+      tags: [Orders]
+      summary: Mark items as picked
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: string
+                      pickedQuantity:
+                        type: integer
+              required: [id, items]
+      responses:
+        '200':
+          description: Items picked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/fulfillment/PACK_ITEMS:
+    post:
+      tags: [Orders]
+      summary: Mark items as packed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                weightKg:
+                  type: number
+                  format: double
+                  nullable: true
+                packageCount:
+                  type: integer
+                  nullable: true
+              required: [id, items]
+      responses:
+        '200':
+          description: Items packed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/fulfillment/SHIP_ORDER:
+    post:
+      tags: [Orders]
+      summary: Mark order as shipped
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                carrier:
+                  type: string
+                  nullable: true
+                trackingNumber:
+                  type: string
+                  nullable: true
+                shippingLabelUrl:
+                  type: string
+                  nullable: true
+                estimatedDelivery:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Order shipped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/fulfillment/DELIVER_ORDER:
+    post:
+      tags: [Orders]
+      summary: Mark order as delivered
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                actualDelivery:
+                  type: string
+                  format: date-time
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Order delivered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/fulfillment/DELETE_FULFILLMENT:
+    post:
+      tags: [Orders]
+      summary: Cancel a fulfillment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Fulfillment cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Return Requests ───────────────────────────────────────────────────────
+
+  /api/return/request/CREATE:
+    post:
+      tags: [Orders]
+      summary: Create a return request
+      description: Customer initiates a return for an order.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                reason:
+                  type: string
+                reasonDescription:
+                  type: string
+                  nullable: true
+              required: [orderId, userId, businessId, reason]
+      responses:
+        '200':
+          description: Return request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/return/request/RETRIEVE:
+    post:
+      tags: [Orders]
+      summary: Retrieve return requests
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  nullable: true
+                userId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Return request list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/return/request/APPROVE:
+    post:
+      tags: [Orders]
+      summary: Approve a return request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                adminNotes:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Return request approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/return/request/REJECT:
+    post:
+      tags: [Orders]
+      summary: Reject a return request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                adminNotes:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Return request rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/return/request/RECEIVE:
+    post:
+      tags: [Orders]
+      summary: Receive returned items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                adminNotes:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Items received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/return/request/REFUND:
+    post:
+      tags: [Orders]
+      summary: Issue refund for return
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                refundAmount:
+                  type: number
+                  format: double
+                adminNotes:
+                  type: string
+                  nullable: true
+              required: [id, refundAmount]
+      responses:
+        '200':
+          description: Refund issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Return Policy ─────────────────────────────────────────────────────────
+
+  /api/return/policy/CREATE:
+    post:
+      tags: [Orders]
+      summary: Create return policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+                policyName:
+                  type: string
+                returnWindowDays:
+                  type: integer
+                refundMethod:
+                  type: string
+                  nullable: true
+                restockingFeePercent:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [businessId, policyName, returnWindowDays]
+      responses:
+        '200':
+          description: Return policy created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/return/policy/RETRIEVE:
+    post:
+      tags: [Orders]
+      summary: Retrieve return policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Return policy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/return/policy/UPDATE:
+    post:
+      tags: [Orders]
+      summary: Update return policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+                returnWindowDays:
+                  type: integer
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Return policy updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/return/policy/DELETE:
+    post:
+      tags: [Orders]
+      summary: Delete return policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+              required: [id, businessId]
+      responses:
+        '200':
+          description: Return policy deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Pre-Orders ────────────────────────────────────────────────────────────
+
+  /api/v1/preorders/create:
+    post:
+      tags: [Orders]
+      summary: Create a pre-order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                productId:
+                  type: string
+                customerId:
+                  type: string
+                  nullable: true
+                quantity:
+                  type: integer
+                expectedDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                depositAmount:
+                  type: number
+                  format: double
+                  nullable: true
+                depositPaid:
+                  type: boolean
+                  nullable: true
+              required: [businessId, productId]
+      responses:
+        '200':
+          description: Pre-order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/preorders/retrieve:
+    post:
+      tags: [Orders]
+      summary: Get a pre-order by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preOrderId:
+                  type: string
+              required: [preOrderId]
+      responses:
+        '200':
+          description: Pre-order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/preorders/list:
+    post:
+      tags: [Orders]
+      summary: List pre-orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                status:
+                  type: string
+                  nullable: true
+                page:
+                  type: integer
+                  default: 1
+                limit:
+                  type: integer
+                  default: 20
+              required: [businessId]
+      responses:
+        '200':
+          description: Pre-order list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /api/v1/preorders/update:
+    post:
+      tags: [Orders]
+      summary: Update a pre-order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preOrderId:
+                  type: string
+                quantity:
+                  type: integer
+                  nullable: true
+              required: [preOrderId]
+      responses:
+        '200':
+          description: Pre-order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/preorders/update-status:
+    post:
+      tags: [Orders]
+      summary: Update pre-order status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preOrderId:
+                  type: string
+                status:
+                  type: string
+              required: [preOrderId, status]
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/preorders/cancel:
+    post:
+      tags: [Orders]
+      summary: Cancel a pre-order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preOrderId:
+                  type: string
+                reason:
+                  type: string
+                  nullable: true
+              required: [preOrderId]
+      responses:
+        '200':
+          description: Pre-order cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/preorders/fulfill:
+    post:
+      tags: [Orders]
+      summary: Fulfill a pre-order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preOrderId:
+                  type: string
+              required: [preOrderId]
+      responses:
+        '200':
+          description: Pre-order fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/preorders/config/create:
+    post:
+      tags: [Orders]
+      summary: Create backorder config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                productId:
+                  type: string
+                isEnabled:
+                  type: boolean
+                maxBackorderQty:
+                  type: integer
+                  nullable: true
+              required: [businessId, productId]
+      responses:
+        '200':
+          description: Backorder config created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/preorders/config/retrieve:
+    post:
+      tags: [Orders]
+      summary: Retrieve backorder config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                configId:
+                  type: string
+                  nullable: true
+                productId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Backorder config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/preorders/config/update:
+    post:
+      tags: [Orders]
+      summary: Update backorder config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                configId:
+                  type: string
+                isEnabled:
+                  type: boolean
+                  nullable: true
+              required: [configId]
+      responses:
+        '200':
+          description: Backorder config updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/preorders/config/list:
+    post:
+      tags: [Orders]
+      summary: List backorder configs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                page:
+                  type: integer
+                  default: 1
+                limit:
+                  type: integer
+                  default: 20
+              required: [businessId]
+      responses:
+        '200':
+          description: Backorder config list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /api/v1/preorders/config/delete:
+    post:
+      tags: [Orders]
+      summary: Delete backorder config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                configId:
+                  type: string
+              required: [configId]
+      responses:
+        '200':
+          description: Backorder config deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas:
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        businessId:
+          type: string
+        storeId:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items:
+            type: object
+        totalAmount:
+          type: number
+          format: double
+          nullable: true
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, PREPARING, READY, DISPATCHED, DELIVERED, CANCELLED, DECLINED]
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        name:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+        price:
+          type: number
+          format: double
+        image:
+          type: string
+          nullable: true

@@ -1,0 +1,1306 @@
+paths:
+  # ── Business (Store) ──────────────────────────────────────────────────────
+
+  /api/store/CREATE_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Create a new business
+      description: Registers a new business (store) for the authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBusinessRequest'
+      responses:
+        '200':
+          description: Business created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Business'
+
+  /api/store/ONBOARD_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Onboard a new business
+      description: Full onboarding flow for a new business, including initial config.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBusinessRequest'
+      responses:
+        '200':
+          description: Business onboarded
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Business'
+
+  /api/store/RETRIEVE_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Retrieve businesses for a user
+      description: Returns all businesses owned by or associated with the given userId.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: List of businesses
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Business'
+
+  /api/store/RETRIEVE_SINGLE_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Retrieve a single business
+      description: Returns a single business by ID or business number.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                number:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Business details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Business'
+
+  /api/store/UPDATE_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Update a business
+      description: Updates business details such as name, address, email, or profile image.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                mobile:
+                  type: string
+                  nullable: true
+                dialCode:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+                address:
+                  type: string
+                  nullable: true
+                profileImage:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Business updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Business'
+
+  /api/store/DELETE_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Delete a business
+      description: Soft-deletes a business by ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Business deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/FIND_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Find business by mobile
+      description: Finds a business by owner mobile number and dial code.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                dialCode:
+                  type: string
+              required: [mobile, dialCode]
+      responses:
+        '200':
+          description: Matching business
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Business'
+
+  /api/store/NEARBY_BUSINESS:
+    post:
+      tags: [Business]
+      summary: Find nearby businesses
+      description: Returns businesses near the user's location.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                latitude:
+                  type: number
+                  format: double
+                  nullable: true
+                longitude:
+                  type: number
+                  format: double
+                  nullable: true
+                radiusKm:
+                  type: number
+                  format: double
+                  nullable: true
+      responses:
+        '200':
+          description: Nearby businesses
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Business'
+
+  /api/store/COUNT:
+    post:
+      tags: [Business]
+      summary: Get total business count
+      description: Returns the total number of businesses on the platform.
+      responses:
+        '200':
+          description: Count
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: integer
+
+  /api/store/ADMIN_LIST:
+    post:
+      tags: [Business]
+      summary: Admin — list all businesses
+      description: Admin/Owner-only. Returns a paginated list of all businesses.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  default: 1
+                limit:
+                  type: integer
+                  default: 20
+                search:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+                  enum: [ACTIVE, PENDING, SUSPENDED, REJECTED]
+      responses:
+        '200':
+          description: Paginated business list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /api/store/ADMIN_APPROVE:
+    post:
+      tags: [Business]
+      summary: Admin — approve a business
+      description: Admin/Owner-only. Approves a business that is in PENDING status.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Business approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/ADMIN_REJECT:
+    post:
+      tags: [Business]
+      summary: Admin — reject a business
+      description: Admin/Owner-only. Rejects a business application with a reason.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                reason:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Business rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/ADMIN_SUSPEND:
+    post:
+      tags: [Business]
+      summary: Admin — suspend a business
+      description: Admin/Owner-only. Suspends an active business.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                reason:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Business suspended
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/ADMIN_ACTIVATE:
+    post:
+      tags: [Business]
+      summary: Admin — reactivate a business
+      description: Admin/Owner-only. Reactivates a suspended business.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Business activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Business Code ─────────────────────────────────────────────────────────
+
+  /api/business/code/generate:
+    post:
+      tags: [Business]
+      summary: Generate a unique business code
+      description: Generates a unique, human-readable business code with an optional prefix.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prefix:
+                  type: string
+                  example: BIZ
+                  nullable: true
+      responses:
+        '200':
+          description: Generated code
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: string
+                        example: BIZ-A3F9
+
+  /api/business/code/validate:
+    post:
+      tags: [Business]
+      summary: Validate a business code
+      description: Checks if a business code is valid and not already in use.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+              required: [code]
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: boolean
+
+  # ── Business Config ───────────────────────────────────────────────────────
+
+  /api/store/config/CREATE_BUSINESS_CONFIGURATION:
+    post:
+      tags: [Business]
+      summary: Create business configuration
+      description: Creates the initial configuration record for a business (currency, timezone, delivery settings, etc.).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBusinessConfigRequest'
+      responses:
+        '200':
+          description: Config created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/BusinessConfig'
+
+  /api/store/config/RETRIEVE_BUSINESS_CONFIGURATION:
+    post:
+      tags: [Business]
+      summary: Retrieve business configuration
+      description: Returns the configuration for a business.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Config
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/BusinessConfig'
+
+  /api/store/config/UPDATE_BUSINESS_CONFIGURATION:
+    post:
+      tags: [Business]
+      summary: Update business configuration
+      description: Updates configuration fields for a business.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                currency:
+                  type: string
+                  nullable: true
+                timezone:
+                  type: string
+                  nullable: true
+                deliveryEnabled:
+                  type: boolean
+                  nullable: true
+                taxEnabled:
+                  type: boolean
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Config updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/BusinessConfig'
+
+  /api/store/config/RETRIEVE_ALL_CURRENCY:
+    post:
+      tags: [Business]
+      summary: List all supported currencies
+      description: Returns all currency codes supported by the platform.
+      security: []
+      responses:
+        '200':
+          description: Currency list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: INR
+                            name:
+                              type: string
+                              example: Indian Rupee
+                            symbol:
+                              type: string
+                              example: "₹"
+
+  # ── Store Connection ──────────────────────────────────────────────────────
+
+  /api/store/CREATE_BUSINESS_CONNECTION:
+    post:
+      tags: [Business]
+      summary: Create a business connection
+      description: Sends a connection request from one business to another.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fromBusinessId:
+                  type: string
+                toBusinessId:
+                  type: string
+              required: [fromBusinessId, toBusinessId]
+      responses:
+        '200':
+          description: Connection request sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/ACCEPT_BUSINESS_CONNECTION:
+    post:
+      tags: [Business]
+      summary: Accept a business connection
+      description: Accepts a pending business connection request.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                connectionId:
+                  type: string
+              required: [connectionId]
+      responses:
+        '200':
+          description: Connection accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/REJECT_BUSINESS_CONNECTION:
+    post:
+      tags: [Business]
+      summary: Reject a business connection
+      description: Rejects a pending business connection request.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                connectionId:
+                  type: string
+              required: [connectionId]
+      responses:
+        '200':
+          description: Connection rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/RETRIEVE_BUSINESS_CONNECTION:
+    post:
+      tags: [Business]
+      summary: Retrieve business connections
+      description: Returns connections for a business, optionally filtered by status.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                status:
+                  type: string
+                  nullable: true
+                  enum: [PENDING, ACCEPTED, REJECTED]
+              required: [businessId]
+      responses:
+        '200':
+          description: Connection list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          type: object
+
+  /api/store/DELETE_BUSINESS_CONNECTION:
+    post:
+      tags: [Business]
+      summary: Delete a business connection
+      description: Removes an existing business connection.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                connectionId:
+                  type: string
+              required: [connectionId]
+      responses:
+        '200':
+          description: Connection deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Business Stores (multi-outlet) ────────────────────────────────────────
+
+  /api/business/store/create:
+    post:
+      tags: [Business]
+      summary: Create a store outlet
+      description: Creates a store outlet under a business (multi-outlet support).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                storeName:
+                  type: string
+                storeCode:
+                  type: string
+                  nullable: true
+                storeType:
+                  type: string
+                  nullable: true
+              required: [businessId, storeName]
+      responses:
+        '200':
+          description: Store created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/BusinessStore'
+
+  /api/business/store/retrieve:
+    post:
+      tags: [Business]
+      summary: Retrieve stores for a business
+      description: Returns all store outlets for the given business.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Store list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BusinessStore'
+
+  /api/business/store/find:
+    post:
+      tags: [Business]
+      summary: Find a store by ID
+      description: Returns a single store by its ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Store details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/BusinessStore'
+
+  /api/business/store/update:
+    post:
+      tags: [Business]
+      summary: Update a store
+      description: Updates store details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                storeName:
+                  type: string
+                  nullable: true
+                storeCode:
+                  type: string
+                  nullable: true
+                storeType:
+                  type: string
+                  nullable: true
+                isActive:
+                  type: boolean
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Store updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/BusinessStore'
+
+  /api/business/store/delete:
+    post:
+      tags: [Business]
+      summary: Delete a store
+      description: Deletes a store outlet.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Store deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Payment Gateway Config ────────────────────────────────────────────────
+
+  /api/payment/gateway/config/CREATE:
+    post:
+      tags: [Business]
+      summary: Create payment gateway config
+      description: Creates a payment gateway configuration for a business/store.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentGatewayConfigRequest'
+      responses:
+        '200':
+          description: Config created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payment/gateway/config/UPDATE:
+    post:
+      tags: [Business]
+      summary: Update payment gateway config
+      description: Updates an existing payment gateway configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  properties:
+                    configId:
+                      type: string
+                  required: [configId]
+                - $ref: '#/components/schemas/PaymentGatewayConfigRequest'
+      responses:
+        '200':
+          description: Config updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payment/gateway/config/DELETE:
+    post:
+      tags: [Business]
+      summary: Delete payment gateway config
+      description: Removes a payment gateway configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                configId:
+                  type: string
+              required: [configId]
+      responses:
+        '200':
+          description: Config deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/payment/gateway/config/RETRIEVE:
+    post:
+      tags: [Business]
+      summary: Retrieve payment gateway configs
+      description: Returns all payment gateway configurations for a store.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                storeId:
+                  type: string
+              required: [storeId]
+      responses:
+        '200':
+          description: Config list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          type: object
+
+  # ── Store Config (delivery/payment types) ─────────────────────────────────
+
+  /api/store/config/delivery-types/retrieve:
+    post:
+      tags: [Business]
+      summary: List delivery types
+      description: Returns all supported delivery types (e.g. PICKUP, HOME_DELIVERY).
+      security: []
+      responses:
+        '200':
+          description: Delivery types
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          type: string
+
+  /api/store/config/payment-methods/retrieve:
+    post:
+      tags: [Business]
+      summary: List payment methods
+      description: Returns all supported payment method types.
+      security: []
+      responses:
+        '200':
+          description: Payment methods
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          type: string
+
+  # ── Business Type ─────────────────────────────────────────────────────────
+
+  /api/store/type/CREATE_BUSINESS_TYPE:
+    post:
+      tags: [Business]
+      summary: Create a business type
+      description: Creates a new business type under a master business.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                masterBusinessId:
+                  type: string
+                typeName:
+                  type: string
+              required: [masterBusinessId, typeName]
+      responses:
+        '200':
+          description: Business type created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/type/RETRIEVE_BUSINESS_TYPE:
+    post:
+      tags: [Business]
+      summary: Retrieve business types
+      description: Returns all business types for a master business.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                masterBusinessId:
+                  type: string
+              required: [masterBusinessId]
+      responses:
+        '200':
+          description: Business type list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          type: object
+
+  /api/store/type/UPDATE_BUSINESS_TYPE:
+    post:
+      tags: [Business]
+      summary: Update a business type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                masterBusinessId:
+                  type: string
+                typeId:
+                  type: string
+                typeName:
+                  type: string
+              required: [masterBusinessId, typeId, typeName]
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/type/DELETE_BUSINESS_TYPE:
+    post:
+      tags: [Business]
+      summary: Delete a business type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Master Business ───────────────────────────────────────────────────────
+
+  /api/business/master/retrieve:
+    post:
+      tags: [Business]
+      summary: Retrieve all master businesses
+      description: Returns all master business records (platform-level).
+      responses:
+        '200':
+          description: Master business list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          type: object
+
+  /api/business/master/find:
+    post:
+      tags: [Business]
+      summary: Find master business by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Master business
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/business/master/delete:
+    post:
+      tags: [Business]
+      summary: Delete master business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Super Business ────────────────────────────────────────────────────────
+
+  /api/business/super/setup:
+    post:
+      tags: [Business]
+      summary: Super business master data setup
+      description: Seeds master data for a super business (admin operation).
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Setup configuration (varies by platform)
+      responses:
+        '200':
+          description: Setup complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas:
+    Business:
+      type: object
+      properties:
+        id:
+          type: string
+        business_name:
+          type: string
+        mobile:
+          type: string
+        dialCode:
+          type: string
+        email:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        businessType:
+          type: string
+          nullable: true
+        profileImage:
+          type: string
+          nullable: true
+        userId:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, PENDING, SUSPENDED, REJECTED]
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    CreateBusinessRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        name:
+          type: string
+        mobile:
+          type: string
+        dialCode:
+          type: string
+        email:
+          type: string
+          nullable: true
+        businessType:
+          type: string
+          nullable: true
+      required: [userId, name, mobile, dialCode]
+
+    BusinessConfig:
+      type: object
+      properties:
+        id:
+          type: string
+        businessId:
+          type: string
+        currency:
+          type: string
+          example: INR
+        timezone:
+          type: string
+          example: Asia/Kolkata
+        deliveryEnabled:
+          type: boolean
+        taxEnabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    CreateBusinessConfigRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+        currency:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+          nullable: true
+        deliveryEnabled:
+          type: boolean
+          nullable: true
+        taxEnabled:
+          type: boolean
+          nullable: true
+      required: [businessId]
+
+    BusinessStore:
+      type: object
+      properties:
+        id:
+          type: string
+        businessId:
+          type: string
+        storeName:
+          type: string
+        storeCode:
+          type: string
+          nullable: true
+        storeType:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    PaymentGatewayConfigRequest:
+      type: object
+      properties:
+        storeId:
+          type: string
+        gatewayType:
+          type: string
+          example: RAZORPAY
+        credentials:
+          type: object
+          description: Gateway-specific credentials (key/secret pairs)
+      required: [storeId, gatewayType]

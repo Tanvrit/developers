@@ -1,0 +1,122 @@
+openapi: 3.1.0
+info:
+  title: Tanvrit Server API
+  description: |
+    REST API for the Tanvrit commerce platform. Covers authentication, business management,
+    inventory, orders, CRM, compute, gathering/events, workforce, marketing, notifications,
+    support, finance, media, social, and platform administration.
+
+    **Authentication**: Most endpoints require a JWT Bearer token obtained via
+    `/api/auth/AUTHENTICATE` or `/api/auth/LOGIN_EMAIL`. Pass it as `Authorization: Bearer <token>`.
+
+    **Request pattern**: The API uses a POST-based RPC style. All mutations and queries are POST
+    requests with JSON bodies. Responses follow a uniform envelope: `{ status, message, payload }`.
+
+    **AI Commerce Gateway**: Merchant endpoints use `X-API-Key` (obtain via `/api/ai/v1/keys/create`).
+    Public catalog endpoints require no auth.
+  version: 1.0.0
+  contact:
+    name: Tanvrit Engineering
+    url: https://tanvrit.com
+
+servers:
+  - url: https://api.tanvrit.com
+    description: Production
+  - url: http://localhost:8080
+    description: Local development
+
+tags:
+  - name: Auth
+    description: User authentication, OTP, registration, and session management
+  - name: Business
+    description: Business (store) CRUD, codes, config, types, connections, and hierarchy
+  - name: AI Commerce
+    description: AI Commerce Gateway — merchant, customer, and catalog endpoints for AI agents
+  - name: Inventory Products
+    description: Products, categories, subcategories, brands, colors, sizes, UOM, barcodes, and models
+  - name: Inventory Pricing
+    description: Offers, discounts, coupons, product prices, bundles, and gift cards
+  - name: Inventory Stock
+    description: Stock levels, batches, audits, health, velocity, restock alerts, suppliers, purchase orders, warehouse, and transfers
+  - name: Orders
+    description: Order lifecycle, cart, fulfillment, returns, and pre-orders
+  - name: Customer
+    description: Customer records, contacts, phone contacts, favorites, and wishlists
+  - name: Pricing
+    description: Price tiers, schedules, customer groups, and price calculation
+  - name: CRM
+    description: Leads, deals, pipelines, companies, activities, tasks, email sequences, workflows, and web forms
+  - name: Compute
+    description: Distributed compute jobs, nodes, templates, schedules, volumes, artifacts, billing, and marketplace
+  - name: Gathering
+    description: Gatherings (weddings/events), attendees, groups, RSVPs, check-ins, budgets, seating, vendors, and invitations
+  - name: Education
+    description: Schools, classes, exams, and grades
+  - name: Workforce
+    description: Employees, job roles, jobs, attendance, shifts, and commissions
+  - name: Marketing
+    description: Marketing campaigns, email marketing, LLM content, image generation, and promotions
+  - name: Notifications
+    description: Push notifications, in-app notifications, templates, preferences, and live updates
+  - name: Support
+    description: Support tickets, articles, canned responses, and public help center
+  - name: Finance
+    description: Payments, payouts, wallets, transactions, invoices, accounting, tax, sales, and currency
+  - name: Media & Social
+    description: Media files, presigned uploads, feed, posts, follows, ratings, reviews, referrals, loyalty, and subscriptions
+  - name: Platform & Admin
+    description: Platform config, admin tools, control plane, monitoring, app builds, themes, store hours, webhooks, and infrastructure
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from /api/auth/AUTHENTICATE or /api/auth/LOGIN_EMAIL
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for AI Commerce Gateway merchant endpoints. Obtain via /api/ai/v1/keys/create
+
+  schemas:
+    BaseResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: SUCCESS
+        message:
+          type: string
+          example: Success
+          nullable: true
+      required: [status]
+
+    PaginatedResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+          nullable: true
+        payload:
+          type: array
+          items: {}
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+
+    IdRequest:
+      type: object
+      properties:
+        id:
+          type: string
+      required: [id]

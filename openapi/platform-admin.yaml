@@ -1,0 +1,3475 @@
+paths:
+  # ── Platform ──────────────────────────────────────────────────────────────
+
+  /api/platform/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve all platforms (public)
+      security: []
+      responses:
+        '200':
+          description: Platform list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/platform/FIND:
+    post:
+      tags: [Platform & Admin]
+      summary: Find a platform by ID (public)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Platform details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/platform/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete a platform (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Platform deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Platform Profiles ─────────────────────────────────────────────────────
+
+  /api/platforms/profile:
+    get:
+      tags: [Platform & Admin]
+      summary: List all platform profiles (public)
+      security: []
+      responses:
+        '200':
+          description: Platform profile list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/platforms/profile/appIds:
+    get:
+      tags: [Platform & Admin]
+      summary: List app IDs and labels (public)
+      security: []
+      responses:
+        '200':
+          description: App ID list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/platforms/{appId}/profile:
+    get:
+      tags: [Platform & Admin]
+      summary: Get platform profile by appId (public)
+      security: []
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Platform profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    put:
+      tags: [Platform & Admin]
+      summary: Upsert platform profile (admin)
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: true
+                logoUrl:
+                  type: string
+                  nullable: true
+                primaryColor:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Profile upserted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    delete:
+      tags: [Platform & Admin]
+      summary: Delete platform profile (admin)
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Profile deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Platform Provider Credentials ─────────────────────────────────────────
+
+  /api/platforms/{appId}/auth-config:
+    get:
+      tags: [Platform & Admin]
+      summary: Get auth config for a platform (public)
+      security: []
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Auth config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/platforms/{appId}/provider-credentials/{provider}:
+    get:
+      tags: [Platform & Admin]
+      summary: Get provider credential (admin)
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: provider
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Provider credential
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    put:
+      tags: [Platform & Admin]
+      summary: Upsert provider credential (admin)
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: provider
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  nullable: true
+                clientSecret:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Credential upserted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    delete:
+      tags: [Platform & Admin]
+      summary: Delete provider credential (admin)
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: provider
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Credential deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Admin ─────────────────────────────────────────────────────────────────
+
+  /api/admin/stats:
+    get:
+      tags: [Platform & Admin]
+      summary: Get admin platform stats
+      responses:
+        '200':
+          description: Admin stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/users:
+    get:
+      tags: [Platform & Admin]
+      summary: List all users (admin)
+      responses:
+        '200':
+          description: User list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/users/{id}:
+    get:
+      tags: [Platform & Admin]
+      summary: Get user by ID (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    put:
+      tags: [Platform & Admin]
+      summary: Update user (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isActive:
+                  type: boolean
+                  nullable: true
+                role:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/businesses:
+    get:
+      tags: [Platform & Admin]
+      summary: List all businesses (admin)
+      responses:
+        '200':
+          description: Business list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/businesses/{id}:
+    get:
+      tags: [Platform & Admin]
+      summary: Get business by ID (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Business details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    put:
+      tags: [Platform & Admin]
+      summary: Update business (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isActive:
+                  type: boolean
+                  nullable: true
+      responses:
+        '200':
+          description: Business updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    delete:
+      tags: [Platform & Admin]
+      summary: Delete business (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Business deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/super-businesses:
+    get:
+      tags: [Platform & Admin]
+      summary: List super businesses (admin)
+      responses:
+        '200':
+          description: Super business list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    post:
+      tags: [Platform & Admin]
+      summary: Create super business (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required: [name]
+      responses:
+        '200':
+          description: Super business created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/super-businesses/{id}:
+    put:
+      tags: [Platform & Admin]
+      summary: Update super business (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Super business updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    delete:
+      tags: [Platform & Admin]
+      summary: Delete super business (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Super business deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/master-businesses:
+    get:
+      tags: [Platform & Admin]
+      summary: List master businesses (admin)
+      responses:
+        '200':
+          description: Master business list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/master-businesses/{id}:
+    get:
+      tags: [Platform & Admin]
+      summary: Get master business by ID (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Master business details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/platforms:
+    get:
+      tags: [Platform & Admin]
+      summary: List platforms (admin)
+      responses:
+        '200':
+          description: Platform list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    post:
+      tags: [Platform & Admin]
+      summary: Create platform (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                appId:
+                  type: string
+              required: [name, appId]
+      responses:
+        '200':
+          description: Platform created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/platforms/{id}:
+    get:
+      tags: [Platform & Admin]
+      summary: Get platform by ID (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Platform details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    put:
+      tags: [Platform & Admin]
+      summary: Update platform (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Platform updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    delete:
+      tags: [Platform & Admin]
+      summary: Delete platform (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Platform deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/business-types:
+    get:
+      tags: [Platform & Admin]
+      summary: List business types (admin)
+      responses:
+        '200':
+          description: Business type list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    post:
+      tags: [Platform & Admin]
+      summary: Create business type (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+              required: [name, code]
+      responses:
+        '200':
+          description: Business type created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/business-types/{id}:
+    put:
+      tags: [Platform & Admin]
+      summary: Update business type (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Business type updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    delete:
+      tags: [Platform & Admin]
+      summary: Delete business type (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Business type deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/currencies:
+    get:
+      tags: [Platform & Admin]
+      summary: List currencies (admin)
+      responses:
+        '200':
+          description: Currency list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    post:
+      tags: [Platform & Admin]
+      summary: Create currency (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                symbol:
+                  type: string
+              required: [code, name, symbol]
+      responses:
+        '200':
+          description: Currency created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/currencies/{id}:
+    get:
+      tags: [Platform & Admin]
+      summary: Get currency (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Currency details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    put:
+      tags: [Platform & Admin]
+      summary: Update currency (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: true
+                symbol:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Currency updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    delete:
+      tags: [Platform & Admin]
+      summary: Delete currency (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Currency deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/transactions:
+    get:
+      tags: [Platform & Admin]
+      summary: List transactions (admin)
+      responses:
+        '200':
+          description: Transaction list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/transactions/{id}:
+    get:
+      tags: [Platform & Admin]
+      summary: Get transaction by ID (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/localization/bundles:
+    get:
+      tags: [Platform & Admin]
+      summary: List localization bundles (admin)
+      responses:
+        '200':
+          description: Localization bundle list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/themes:
+    get:
+      tags: [Platform & Admin]
+      summary: List themes (admin)
+      responses:
+        '200':
+          description: Theme list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    post:
+      tags: [Platform & Admin]
+      summary: Create theme (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                config:
+                  type: object
+              required: [name, config]
+      responses:
+        '200':
+          description: Theme created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/themes/{id}:
+    get:
+      tags: [Platform & Admin]
+      summary: Get theme by ID (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Theme details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    put:
+      tags: [Platform & Admin]
+      summary: Update theme (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: true
+                config:
+                  type: object
+                  nullable: true
+      responses:
+        '200':
+          description: Theme updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/admin/analytics/overview:
+    get:
+      tags: [Platform & Admin]
+      summary: Get analytics overview (admin)
+      responses:
+        '200':
+          description: Analytics overview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Control Config ────────────────────────────────────────────────────────
+
+  /api/control/config:
+    get:
+      tags: [Platform & Admin]
+      summary: Get control config
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Control config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    put:
+      tags: [Platform & Admin]
+      summary: Update control config
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Control config updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Setup ─────────────────────────────────────────────────────────────────
+
+  /api/setup/bootstrap:
+    post:
+      tags: [Platform & Admin]
+      summary: Bootstrap the platform (secret-gated, unauthenticated)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                secret:
+                  type: string
+              required: [secret]
+      responses:
+        '200':
+          description: Platform bootstrapped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/setup/SYNC:
+    post:
+      tags: [Platform & Admin]
+      summary: Sync setup data
+      responses:
+        '200':
+          description: Setup synced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/setup/health:
+    get:
+      tags: [Platform & Admin]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: Healthy
+
+  # ── App Build Config ──────────────────────────────────────────────────────
+
+  /api/app-build-config/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Create app build config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                platform:
+                  type: string
+                  example: ANDROID
+                config:
+                  type: object
+              required: [businessId, platform, config]
+      responses:
+        '200':
+          description: Build config created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/app-build-config/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update app build config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                config:
+                  type: object
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Build config updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/app-build-config/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve app build configs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Build config list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/app-build-config/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete app build config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Build config deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── App Releases ──────────────────────────────────────────────────────────
+
+  /api/app-release/TRIGGER_BUILD:
+    post:
+      tags: [Platform & Admin]
+      summary: Trigger an app build
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                buildConfigId:
+                  type: string
+                version:
+                  type: string
+                  nullable: true
+              required: [buildConfigId]
+      responses:
+        '200':
+          description: Build triggered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/app-release/GET_RELEASES:
+    post:
+      tags: [Platform & Admin]
+      summary: Get app releases
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                buildConfigId:
+                  type: string
+              required: [buildConfigId]
+      responses:
+        '200':
+          description: Release list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/app-release/CANCEL_BUILD:
+    post:
+      tags: [Platform & Admin]
+      summary: Cancel an app build
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Build cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/app-release/UPDATE_STATUS:
+    post:
+      tags: [Platform & Admin]
+      summary: Update app release build status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                status:
+                  type: string
+              required: [id, status]
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Store FCM Config ──────────────────────────────────────────────────────
+
+  /api/store-fcm-config/SAVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Save FCM config for a store
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                storeId:
+                  type: string
+                serviceAccountJson:
+                  type: string
+              required: [storeId, serviceAccountJson]
+      responses:
+        '200':
+          description: FCM config saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store-fcm-config/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve FCM config for a store
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                storeId:
+                  type: string
+              required: [storeId]
+      responses:
+        '200':
+          description: FCM config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store-fcm-config/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete FCM config for a store
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                storeId:
+                  type: string
+              required: [storeId]
+      responses:
+        '200':
+          description: FCM config deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── App Theme ─────────────────────────────────────────────────────────────
+
+  /api/app-theme/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Create an app theme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                config:
+                  type: object
+              required: [businessId, name, config]
+      responses:
+        '200':
+          description: App theme created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/app-theme/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve app themes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: App theme list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/app-theme/FIND:
+    post:
+      tags: [Platform & Admin]
+      summary: Find an app theme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: App theme details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/app-theme/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update an app theme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                config:
+                  type: object
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: App theme updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/app-theme/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete an app theme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: App theme deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Offer Banners ─────────────────────────────────────────────────────────
+
+  /api/offer-banner/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Create an offer banner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                title:
+                  type: string
+                imageUrl:
+                  type: string
+                  nullable: true
+                linkUrl:
+                  type: string
+                  nullable: true
+              required: [businessId, title]
+      responses:
+        '200':
+          description: Offer banner created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/offer-banner/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve offer banners
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Offer banner list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/offer-banner/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update an offer banner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                imageUrl:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Offer banner updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/offer-banner/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete an offer banner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Offer banner deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Storefront (public) ───────────────────────────────────────────────────
+
+  /api/public/storefront/stores:
+    get:
+      tags: [Platform & Admin]
+      summary: List active stores (public)
+      security: []
+      parameters:
+        - in: query
+          name: businessTypeCode
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Store list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/storefront/stores/{storeId}:
+    get:
+      tags: [Platform & Admin]
+      summary: Get store detail (public)
+      security: []
+      parameters:
+        - in: path
+          name: storeId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/storefront/stores/{storeId}/products:
+    get:
+      tags: [Platform & Admin]
+      summary: Get store products (public)
+      security: []
+      parameters:
+        - in: path
+          name: storeId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: categoryId
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/storefront/products/{productId}:
+    get:
+      tags: [Platform & Admin]
+      summary: Get product detail (public)
+      security: []
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/storefront/categories:
+    get:
+      tags: [Platform & Admin]
+      summary: Get categories (public)
+      security: []
+      parameters:
+        - in: query
+          name: storeId
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Category list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/storefront/search:
+    get:
+      tags: [Platform & Admin]
+      summary: Search products (public)
+      security: []
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: storeId
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/storefront/featured:
+    get:
+      tags: [Platform & Admin]
+      summary: Get featured products (public)
+      security: []
+      parameters:
+        - in: query
+          name: storeId
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Featured products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Store Hours ───────────────────────────────────────────────────────────
+
+  /api/store/hours/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Create store hours
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                storeId:
+                  type: string
+                dayOfWeek:
+                  type: integer
+                openTime:
+                  type: string
+                  example: "09:00"
+                closeTime:
+                  type: string
+                  example: "21:00"
+                isClosed:
+                  type: boolean
+                  nullable: true
+              required: [storeId, dayOfWeek, openTime, closeTime]
+      responses:
+        '200':
+          description: Store hours created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/hours/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve store hours
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                storeId:
+                  type: string
+              required: [storeId]
+      responses:
+        '200':
+          description: Store hours
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/hours/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update store hours
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                openTime:
+                  type: string
+                  nullable: true
+                closeTime:
+                  type: string
+                  nullable: true
+                isClosed:
+                  type: boolean
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Store hours updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/hours/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete store hours
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Store hours deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Data IO ───────────────────────────────────────────────────────────────
+
+  /api/data/CREATE_IMPORT:
+    post:
+      tags: [Platform & Admin]
+      summary: Create a data import job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                entityType:
+                  type: string
+                fileUrl:
+                  type: string
+              required: [businessId, entityType, fileUrl]
+      responses:
+        '200':
+          description: Import job created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/data/CREATE_EXPORT:
+    post:
+      tags: [Platform & Admin]
+      summary: Create a data export job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                entityType:
+                  type: string
+                format:
+                  type: string
+                  example: CSV
+              required: [businessId, entityType]
+      responses:
+        '200':
+          description: Export job created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/data/jobs:
+    get:
+      tags: [Platform & Admin]
+      summary: Get data job status
+      parameters:
+        - in: query
+          name: jobId
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: businessId
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Localization ──────────────────────────────────────────────────────────
+
+  /api/localization/bundles/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve localization bundles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                language:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Localization bundles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/localization/bundles/FIND:
+    post:
+      tags: [Platform & Admin]
+      summary: Find a localization bundle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Localization bundle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/localization/bundles/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete a localization bundle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Bundle deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/localization/key-values/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve localization key-values
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bundleId:
+                  type: string
+              required: [bundleId]
+      responses:
+        '200':
+          description: Key-value list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/localization/key-values/FIND:
+    post:
+      tags: [Platform & Admin]
+      summary: Find a localization key-value pair
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Key-value pair
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/localization/key-values/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete a localization key-value pair
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Key-value deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/localization/bundles/by-language:
+    post:
+      tags: [Platform & Admin]
+      summary: Get localization bundle by language
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                language:
+                  type: string
+              required: [language]
+      responses:
+        '200':
+          description: Localization bundle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/localization/health:
+    get:
+      tags: [Platform & Admin]
+      summary: Localization health check
+      security: []
+      responses:
+        '200':
+          description: Healthy
+
+  # ── Device ────────────────────────────────────────────────────────────────
+
+  /api/device/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Register a device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                fcmToken:
+                  type: string
+                  nullable: true
+                platform:
+                  type: string
+                  example: ANDROID
+                deviceId:
+                  type: string
+                  nullable: true
+              required: [userId]
+      responses:
+        '200':
+          description: Device registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/device/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve devices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Device list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/device/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update a device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                fcmToken:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Device updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/device/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete a device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Device deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Audit Log ─────────────────────────────────────────────────────────────
+
+  /api/audit-log/CREATE_AUDIT_LOG:
+    post:
+      tags: [Platform & Admin]
+      summary: Create an audit log entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                entityType:
+                  type: string
+                entityId:
+                  type: string
+                  nullable: true
+                userId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+              required: [action, entityType]
+      responses:
+        '200':
+          description: Audit log created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/audit-log/list:
+    get:
+      tags: [Platform & Admin]
+      summary: Get audit trail
+      parameters:
+        - in: query
+          name: businessId
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: entityType
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: entityId
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Audit log entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Feature Flags ─────────────────────────────────────────────────────────
+
+  /api/feature-flags:
+    get:
+      tags: [Platform & Admin]
+      summary: Get feature flags
+      parameters:
+        - in: query
+          name: appId
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Feature flags
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Error Codes ───────────────────────────────────────────────────────────
+
+  /api/error-codes:
+    get:
+      tags: [Platform & Admin]
+      summary: Get error code catalog (public)
+      security: []
+      responses:
+        '200':
+          description: Error code catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Tenants ───────────────────────────────────────────────────────────────
+
+  /tenants/{hostname}:
+    get:
+      tags: [Platform & Admin]
+      summary: Resolve tenant by hostname (public)
+      security: []
+      parameters:
+        - in: path
+          name: hostname
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tenant config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /tenants:
+    get:
+      tags: [Platform & Admin]
+      summary: List tenant configs (admin)
+      responses:
+        '200':
+          description: Tenant list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    post:
+      tags: [Platform & Admin]
+      summary: Create tenant config (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hostname:
+                  type: string
+                businessId:
+                  type: string
+              required: [hostname, businessId]
+      responses:
+        '200':
+          description: Tenant config created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /tenants/{id}:
+    put:
+      tags: [Platform & Admin]
+      summary: Update tenant config (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hostname:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Tenant config updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    delete:
+      tags: [Platform & Admin]
+      summary: Delete tenant config (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tenant config deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── User Permissions ──────────────────────────────────────────────────────
+
+  /api/user-permission/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Create user permission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                permissions:
+                  type: array
+                  items:
+                    type: string
+              required: [userId, businessId, permissions]
+      responses:
+        '200':
+          description: Permission created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/user-permission/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update user permission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+                permissions:
+                  type: array
+                  items:
+                    type: string
+              required: [userId, businessId]
+      responses:
+        '200':
+          description: Permission updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/user-permission/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete user permission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                businessId:
+                  type: string
+              required: [userId, businessId]
+      responses:
+        '200':
+          description: Permission deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/user-permission/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve user permissions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: User permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Meetings ──────────────────────────────────────────────────────────────
+
+  /api/meeting/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Create a meeting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                organizerId:
+                  type: string
+                title:
+                  type: string
+                scheduledAt:
+                  type: string
+                  format: date-time
+                participantIds:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+              required: [organizerId, title, scheduledAt]
+      responses:
+        '200':
+          description: Meeting created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/meeting/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update a meeting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                scheduledAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Meeting updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/meeting/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve meetings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                organizerId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Meeting list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/meeting/RETRIEVE_MEETING_BY_USER:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve meetings by user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: User meetings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/meeting/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete a meeting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Meeting deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Tasks ─────────────────────────────────────────────────────────────────
+
+  /api/task/create:
+    post:
+      tags: [Platform & Admin]
+      summary: Create a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assigneeId:
+                  type: string
+                  nullable: true
+                title:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                dueDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+              required: [title]
+      responses:
+        '200':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/task/update:
+    post:
+      tags: [Platform & Admin]
+      summary: Update a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/task/delete:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Task deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/task/get:
+    post:
+      tags: [Platform & Admin]
+      summary: Get a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/task/list:
+    post:
+      tags: [Platform & Admin]
+      summary: List tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assigneeId:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Task list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Profiles ──────────────────────────────────────────────────────────────
+
+  /api/profile/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Create a user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                displayName:
+                  type: string
+                  nullable: true
+                bio:
+                  type: string
+                  nullable: true
+                avatarUrl:
+                  type: string
+                  nullable: true
+              required: [userId]
+      responses:
+        '200':
+          description: Profile created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/profile/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update a user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                displayName:
+                  type: string
+                  nullable: true
+                bio:
+                  type: string
+                  nullable: true
+                avatarUrl:
+                  type: string
+                  nullable: true
+              required: [userId]
+      responses:
+        '200':
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/profile/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve profiles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userIds:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Profile list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/profile/RETRIEVE_PROFILE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve single user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Profile details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/profile/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete a user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Profile deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/profile/RETRIEVE_RECOMMEND_PROFILES:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve recommended profiles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Recommended profiles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/profile/RETRIEVE_EXPERT_PROFILES:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve expert profiles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Expert profiles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Chat & Conversations ──────────────────────────────────────────────────
+
+  /api/message/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve messages in a conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                conversationId:
+                  type: string
+              required: [conversationId]
+      responses:
+        '200':
+          description: Message list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/message/GET:
+    post:
+      tags: [Platform & Admin]
+      summary: Get a single message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Message details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/message/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Create a chat message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                conversationId:
+                  type: string
+                senderId:
+                  type: string
+                content:
+                  type: string
+                mediaUrl:
+                  type: string
+                  nullable: true
+              required: [conversationId, senderId, content]
+      responses:
+        '200':
+          description: Message created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/message/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update a chat message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                content:
+                  type: string
+              required: [id, content]
+      responses:
+        '200':
+          description: Message updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/message/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete a chat message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Message deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/conversation/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve conversations for a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Conversation list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/conversation/GET:
+    post:
+      tags: [Platform & Admin]
+      summary: Get a conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Conversation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/conversation/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Create a conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                participantIds:
+                  type: array
+                  items:
+                    type: string
+                type:
+                  type: string
+                  nullable: true
+                  example: DIRECT
+              required: [participantIds]
+      responses:
+        '200':
+          description: Conversation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/conversation/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update a conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Conversation updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/conversation/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete a conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Conversation deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compliance ────────────────────────────────────────────────────────────
+
+  /api/compliance/CREATE_DATA_EXPORT:
+    post:
+      tags: [Platform & Admin]
+      summary: Create a data export request (GDPR)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Data export requested
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compliance/RETRIEVE_DATA_EXPORT:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve data export requests
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Data export requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compliance/DOWNLOAD_DATA_EXPORT:
+    post:
+      tags: [Platform & Admin]
+      summary: Download data export
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Download URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compliance/CREATE_DATA_DELETION:
+    post:
+      tags: [Platform & Admin]
+      summary: Create a data deletion request (GDPR right to erasure)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                reason:
+                  type: string
+                  nullable: true
+              required: [userId]
+      responses:
+        '200':
+          description: Deletion requested
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compliance/RETRIEVE_DATA_DELETION:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve data deletion requests
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Deletion requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compliance/CANCEL_DATA_DELETION:
+    post:
+      tags: [Platform & Admin]
+      summary: Cancel a data deletion request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Deletion cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compliance/GRANT_CONSENT:
+    post:
+      tags: [Platform & Admin]
+      summary: Grant consent for data processing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                consentType:
+                  type: string
+              required: [userId, consentType]
+      responses:
+        '200':
+          description: Consent granted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compliance/REVOKE_CONSENT:
+    post:
+      tags: [Platform & Admin]
+      summary: Revoke consent for data processing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                consentType:
+                  type: string
+              required: [userId, consentType]
+      responses:
+        '200':
+          description: Consent revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compliance/RETRIEVE_CONSENT:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve consent records for a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Consent records
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Webhooks ──────────────────────────────────────────────────────────────
+
+  /api/webhook/SUBSCRIBE:
+    post:
+      tags: [Platform & Admin]
+      summary: Subscribe to a webhook event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                url:
+                  type: string
+                events:
+                  type: array
+                  items:
+                    type: string
+                secret:
+                  type: string
+                  nullable: true
+              required: [businessId, url, events]
+      responses:
+        '200':
+          description: Webhook subscription created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/webhook/UNSUBSCRIBE:
+    post:
+      tags: [Platform & Admin]
+      summary: Unsubscribe from a webhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Webhook unsubscribed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/webhook/LIST:
+    post:
+      tags: [Platform & Admin]
+      summary: List webhook subscriptions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Webhook subscription list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/webhook/TEST:
+    post:
+      tags: [Platform & Admin]
+      summary: Test a webhook endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Test delivery sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/webhook/DELIVERY_LOGS:
+    post:
+      tags: [Platform & Admin]
+      summary: Get webhook delivery logs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                webhookId:
+                  type: string
+              required: [webhookId]
+      responses:
+        '200':
+          description: Delivery logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Public Contact Form ───────────────────────────────────────────────────
+
+  /api/public/contact:
+    post:
+      tags: [Platform & Admin]
+      summary: Submit a contact form (public, rate-limited)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                message:
+                  type: string
+              required: [name, email, message]
+      responses:
+        '200':
+          description: Form submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Hotel Rooms ───────────────────────────────────────────────────────────
+
+  /api/hotel/room/health:
+    get:
+      tags: [Platform & Admin]
+      summary: Hotel room health check (public)
+      security: []
+      responses:
+        '200':
+          description: Healthy
+
+  /api/hotel/room/CREATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Create a hotel room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                roomNumber:
+                  type: string
+                type:
+                  type: string
+                  nullable: true
+                capacity:
+                  type: integer
+                  nullable: true
+                pricePerNight:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [businessId, roomNumber]
+      responses:
+        '200':
+          description: Room created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/hotel/room/RETRIEVE:
+    post:
+      tags: [Platform & Admin]
+      summary: Retrieve hotel rooms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                status:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Room list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/hotel/room/UPDATE:
+    post:
+      tags: [Platform & Admin]
+      summary: Update a hotel room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+                  nullable: true
+                pricePerNight:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Room updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/hotel/room/UPDATE_STATUS:
+    post:
+      tags: [Platform & Admin]
+      summary: Update hotel room status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                status:
+                  type: string
+                  example: AVAILABLE
+              required: [id, status]
+      responses:
+        '200':
+          description: Room status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/hotel/room/DELETE:
+    post:
+      tags: [Platform & Admin]
+      summary: Delete a hotel room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Room deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

@@ -1,0 +1,922 @@
+paths:
+  # ── Inventory — Offers ────────────────────────────────────────────────────
+
+  /api/store/offer/CREATE_OFFER:
+    post:
+      tags: [Inventory Pricing]
+      summary: Create an offer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                discountType:
+                  type: string
+                  enum: [PERCENTAGE, FLAT]
+                discountValue:
+                  type: number
+                  format: double
+              required: [businessId, name, discountType, discountValue]
+      responses:
+        '200':
+          description: Offer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/offer/UPDATE_OFFER:
+    post:
+      tags: [Inventory Pricing]
+      summary: Update an offer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                discountType:
+                  type: string
+                  nullable: true
+                discountValue:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Offer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/offer/RETRIEVE_OFFER:
+    post:
+      tags: [Inventory Pricing]
+      summary: Retrieve an offer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offerId:
+                  type: string
+                businessId:
+                  type: string
+              required: [offerId, businessId]
+      responses:
+        '200':
+          description: Offer details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/offer/DELETE_OFFER:
+    post:
+      tags: [Inventory Pricing]
+      summary: Delete an offer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offerId:
+                  type: string
+                businessId:
+                  type: string
+              required: [offerId, businessId]
+      responses:
+        '200':
+          description: Offer deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/offer/list:
+    get:
+      tags: [Inventory Pricing]
+      summary: List offers (paginated)
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Paginated offer list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /api/inventory/offer/RETRIEVE_PRODUCT_OFFER:
+    post:
+      tags: [Inventory Pricing]
+      summary: Retrieve offers for a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                businessId:
+                  type: string
+              required: [productId, businessId]
+      responses:
+        '200':
+          description: Product offer list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Inventory — Discounts ─────────────────────────────────────────────────
+
+  /api/inventory/discount/CREATE_PRODUCT_DISCOUNT:
+    post:
+      tags: [Inventory Pricing]
+      summary: Create a discount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                discountType:
+                  type: string
+                  enum: [PERCENTAGE, FLAT]
+                discountValue:
+                  type: number
+                  format: double
+              required: [businessId, name, discountType, discountValue]
+      responses:
+        '200':
+          description: Discount created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/discount/RETRIEVE_PRODUCT_DISCOUNT:
+    post:
+      tags: [Inventory Pricing]
+      summary: Retrieve discounts for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Discount list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/discount/UPDATE_PRODUCT_DISCOUNT:
+    post:
+      tags: [Inventory Pricing]
+      summary: Update a discount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                discountValue:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Discount updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/discount/DELETE_PRODUCT_DISCOUNT:
+    post:
+      tags: [Inventory Pricing]
+      summary: Delete a discount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Discount deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/discount/list:
+    get:
+      tags: [Inventory Pricing]
+      summary: List discounts (paginated)
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Paginated discount list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ── Inventory — Coupons ───────────────────────────────────────────────────
+
+  /api/coupon/create:
+    post:
+      tags: [Inventory Pricing]
+      summary: Create a coupon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                code:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                discountType:
+                  type: string
+                  enum: [PERCENTAGE, FLAT]
+                discountValue:
+                  type: number
+                  format: double
+                minOrderValue:
+                  type: number
+                  format: double
+                  nullable: true
+                maxUses:
+                  type: integer
+                  nullable: true
+                expiresAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [businessId, code, discountType, discountValue]
+      responses:
+        '200':
+          description: Coupon created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/coupon/retrieve:
+    post:
+      tags: [Inventory Pricing]
+      summary: Retrieve coupons for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Coupon list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/coupon/update:
+    post:
+      tags: [Inventory Pricing]
+      summary: Update a coupon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                code:
+                  type: string
+                  nullable: true
+                discountValue:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Coupon updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/coupon/delete:
+    post:
+      tags: [Inventory Pricing]
+      summary: Delete a coupon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Coupon deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/coupon/list:
+    get:
+      tags: [Inventory Pricing]
+      summary: List coupons (paginated)
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Paginated coupon list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ── Inventory — Product Prices ─────────────────────────────────────────────
+
+  /api/inventory/productPrice/CREATE_PRODUCT_PRICE:
+    post:
+      tags: [Inventory Pricing]
+      summary: Create a product price record
+      description: Creates a price record with MRP, sale price, cost price, and tax rates.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                productId:
+                  type: string
+                mrp:
+                  type: integer
+                  format: int64
+                  description: MRP in minor currency units (e.g. paise)
+                salePrice:
+                  type: integer
+                  format: int64
+                costPrice:
+                  type: integer
+                  format: int64
+                  nullable: true
+                sgst:
+                  type: number
+                  format: double
+                  nullable: true
+                cgst:
+                  type: number
+                  format: double
+                  nullable: true
+                igst:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [businessId, productId, mrp, salePrice]
+      responses:
+        '200':
+          description: Price created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/productPrice/UPDATE_PRODUCT_PRICE:
+    post:
+      tags: [Inventory Pricing]
+      summary: Update a product price record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+                mrp:
+                  type: integer
+                  format: int64
+                  nullable: true
+                salePrice:
+                  type: integer
+                  format: int64
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Price updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/productPrice/RETRIEVE_PRODUCT_PRICE:
+    post:
+      tags: [Inventory Pricing]
+      summary: Retrieve product prices for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Price list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/productPrice/DELETE_PRODUCT_PRICE:
+    post:
+      tags: [Inventory Pricing]
+      summary: Delete a product price record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Price deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/productPrice/SYNC_PRODUCT_PRICE:
+    post:
+      tags: [Inventory Pricing]
+      summary: Sync product prices
+      description: Triggers a sync of product price records.
+      responses:
+        '200':
+          description: Sync triggered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Product Bundles ───────────────────────────────────────────────────────
+
+  /api/store/bundle/CREATE_BUNDLE:
+    post:
+      tags: [Inventory Pricing]
+      summary: Create a product bundle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                products:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: string
+                      quantity:
+                        type: integer
+              required: [businessId, name, products]
+      responses:
+        '200':
+          description: Bundle created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/bundle/UPDATE_BUNDLE:
+    post:
+      tags: [Inventory Pricing]
+      summary: Update a product bundle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Bundle updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/bundle/RETRIEVE_BUNDLE:
+    post:
+      tags: [Inventory Pricing]
+      summary: Retrieve a product bundle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bundleId:
+                  type: string
+                businessId:
+                  type: string
+              required: [bundleId, businessId]
+      responses:
+        '200':
+          description: Bundle details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/bundle/DELETE_BUNDLE:
+    post:
+      tags: [Inventory Pricing]
+      summary: Delete a product bundle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bundleId:
+                  type: string
+                businessId:
+                  type: string
+              required: [bundleId, businessId]
+      responses:
+        '200':
+          description: Bundle deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/store/bundle/list:
+    get:
+      tags: [Inventory Pricing]
+      summary: List bundles (paginated)
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Paginated bundle list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ── Gift Cards ────────────────────────────────────────────────────────────
+
+  /api/v1/giftcards/create:
+    post:
+      tags: [Inventory Pricing]
+      summary: Create a gift card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                code:
+                  type: string
+                initialBalance:
+                  type: integer
+                  format: int64
+                  description: Balance in minor currency units
+                currencyCode:
+                  type: string
+                  example: INR
+              required: [businessId, code, initialBalance]
+      responses:
+        '200':
+          description: Gift card created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/giftcards/retrieve:
+    post:
+      tags: [Inventory Pricing]
+      summary: Retrieve a gift card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                giftCardId:
+                  type: string
+                  nullable: true
+                code:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+      responses:
+        '200':
+          description: Gift card details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/giftcards/retrieve_all:
+    post:
+      tags: [Inventory Pricing]
+      summary: List gift cards
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                status:
+                  type: string
+                  nullable: true
+                page:
+                  type: integer
+                  default: 1
+                limit:
+                  type: integer
+                  default: 20
+              required: [businessId]
+      responses:
+        '200':
+          description: Gift card list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /api/v1/giftcards/redeem:
+    post:
+      tags: [Inventory Pricing]
+      summary: Redeem a gift card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                businessId:
+                  type: string
+                amount:
+                  type: integer
+                  format: int64
+                referenceType:
+                  type: string
+                referenceId:
+                  type: string
+              required: [code, businessId, amount]
+      responses:
+        '200':
+          description: Amount redeemed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/giftcards/check_balance:
+    post:
+      tags: [Inventory Pricing]
+      summary: Check gift card balance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                businessId:
+                  type: string
+              required: [code, businessId]
+      responses:
+        '200':
+          description: Remaining balance
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: integer
+                        format: int64
+
+  /api/v1/giftcards/disable:
+    post:
+      tags: [Inventory Pricing]
+      summary: Disable a gift card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                giftCardId:
+                  type: string
+                businessId:
+                  type: string
+              required: [giftCardId, businessId]
+      responses:
+        '200':
+          description: Gift card disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/giftcards/transactions:
+    post:
+      tags: [Inventory Pricing]
+      summary: List gift card transactions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                giftCardId:
+                  type: string
+                page:
+                  type: integer
+                  default: 1
+                limit:
+                  type: integer
+                  default: 20
+              required: [giftCardId]
+      responses:
+        '200':
+          description: Transaction list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+components:
+  schemas: {}

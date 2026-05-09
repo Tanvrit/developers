@@ -1,0 +1,1210 @@
+paths:
+  # ── Compute Jobs ──────────────────────────────────────────────────────────
+
+  /api/compute/job/submit:
+    post:
+      tags: [Compute]
+      summary: Submit a compute job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                templateId:
+                  type: string
+                  nullable: true
+                image:
+                  type: string
+                  nullable: true
+                command:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+                envVars:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  nullable: true
+                resources:
+                  type: object
+                  nullable: true
+                clusterId:
+                  type: string
+                  nullable: true
+              required: []
+      responses:
+        '200':
+          description: Job submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/job/status:
+    post:
+      tags: [Compute]
+      summary: Get compute job status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/job/cancel:
+    post:
+      tags: [Compute]
+      summary: Cancel a compute job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Job cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/job/list:
+    post:
+      tags: [Compute]
+      summary: List compute jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  nullable: true
+                clusterId:
+                  type: string
+                  nullable: true
+                page:
+                  type: integer
+                  default: 0
+                limit:
+                  type: integer
+                  default: 20
+      responses:
+        '200':
+          description: Job list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/job/logs:
+    post:
+      tags: [Compute]
+      summary: Get compute job logs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                tail:
+                  type: integer
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Job logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/job/retry:
+    post:
+      tags: [Compute]
+      summary: Retry a failed compute job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Job retried
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/job/extend:
+    post:
+      tags: [Compute]
+      summary: Extend compute job timeout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                additionalMinutes:
+                  type: integer
+              required: [id, additionalMinutes]
+      responses:
+        '200':
+          description: Job timeout extended
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Nodes ─────────────────────────────────────────────────────────
+
+  /api/compute/node/register:
+    post:
+      tags: [Compute]
+      summary: Register a compute node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                hostname:
+                  type: string
+                port:
+                  type: integer
+                  nullable: true
+                gpuCount:
+                  type: integer
+                  nullable: true
+                cpuCount:
+                  type: integer
+                  nullable: true
+                memoryGB:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [name, hostname]
+      responses:
+        '200':
+          description: Node registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/node/list:
+    get:
+      tags: [Compute]
+      summary: List compute nodes
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Node list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/node/status:
+    post:
+      tags: [Compute]
+      summary: Get compute node status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Node status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/node/heartbeat:
+    post:
+      tags: [Compute]
+      summary: Send node heartbeat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nodeId:
+                  type: string
+                metrics:
+                  type: object
+                  nullable: true
+              required: [nodeId]
+      responses:
+        '200':
+          description: Heartbeat acknowledged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/node/deregister:
+    post:
+      tags: [Compute]
+      summary: Deregister a compute node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Node deregistered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Node Admin ────────────────────────────────────────────────────
+
+  /api/compute/node/admin/drain:
+    post:
+      tags: [Compute]
+      summary: Drain a compute node (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Node draining
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/node/admin/cordon:
+    post:
+      tags: [Compute]
+      summary: Cordon a compute node (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Node cordoned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/node/admin/uncordon:
+    post:
+      tags: [Compute]
+      summary: Uncordon a compute node (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Node uncordoned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Templates ─────────────────────────────────────────────────────
+
+  /api/compute/template/create:
+    post:
+      tags: [Compute]
+      summary: Create a compute template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                image:
+                  type: string
+                command:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+                resources:
+                  type: object
+                  nullable: true
+                envVars:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  nullable: true
+                isPublic:
+                  type: boolean
+                  nullable: true
+              required: [name, image]
+      responses:
+        '200':
+          description: Template created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/template/update:
+    post:
+      tags: [Compute]
+      summary: Update a compute template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                resources:
+                  type: object
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Template updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/template/delete:
+    post:
+      tags: [Compute]
+      summary: Delete a compute template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Template deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/template/get:
+    post:
+      tags: [Compute]
+      summary: Get a compute template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Template details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/template/list:
+    get:
+      tags: [Compute]
+      summary: List compute templates
+      parameters:
+        - in: query
+          name: isPublic
+          schema:
+            type: boolean
+            nullable: true
+      responses:
+        '200':
+          description: Template list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Schedules ─────────────────────────────────────────────────────
+
+  /api/compute/schedule/create:
+    post:
+      tags: [Compute]
+      summary: Create a compute schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                templateId:
+                  type: string
+                cronExpression:
+                  type: string
+                enabled:
+                  type: boolean
+                  nullable: true
+              required: [name, templateId, cronExpression]
+      responses:
+        '200':
+          description: Schedule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/schedule/update:
+    post:
+      tags: [Compute]
+      summary: Update a compute schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                cronExpression:
+                  type: string
+                  nullable: true
+                enabled:
+                  type: boolean
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Schedule updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/schedule/delete:
+    post:
+      tags: [Compute]
+      summary: Delete a compute schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Schedule deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/schedule/list:
+    get:
+      tags: [Compute]
+      summary: List compute schedules
+      responses:
+        '200':
+          description: Schedule list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Volumes ───────────────────────────────────────────────────────
+
+  /api/compute/volume/create:
+    post:
+      tags: [Compute]
+      summary: Create a compute volume
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                sizeGB:
+                  type: number
+                  format: double
+                storageClass:
+                  type: string
+                  nullable: true
+              required: [name, sizeGB]
+      responses:
+        '200':
+          description: Volume created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/volume/delete:
+    post:
+      tags: [Compute]
+      summary: Delete a compute volume
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Volume deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/volume/list:
+    get:
+      tags: [Compute]
+      summary: List compute volumes
+      responses:
+        '200':
+          description: Volume list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Artifacts ─────────────────────────────────────────────────────
+
+  /api/compute/artifact/upload:
+    post:
+      tags: [Compute]
+      summary: Upload a compute artifact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobId:
+                  type: string
+                name:
+                  type: string
+                contentType:
+                  type: string
+                  nullable: true
+              required: [jobId, name]
+      responses:
+        '200':
+          description: Upload URL returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/artifact/download:
+    post:
+      tags: [Compute]
+      summary: Get artifact download URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Download URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/artifact/list:
+    post:
+      tags: [Compute]
+      summary: List artifacts for a job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobId:
+                  type: string
+              required: [jobId]
+      responses:
+        '200':
+          description: Artifact list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/artifact/delete:
+    post:
+      tags: [Compute]
+      summary: Delete a compute artifact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Artifact deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Marketplace ───────────────────────────────────────────────────
+
+  /api/compute/marketplace/list:
+    get:
+      tags: [Compute]
+      summary: List marketplace compute templates
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Marketplace template list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/marketplace/get:
+    post:
+      tags: [Compute]
+      summary: Get a marketplace template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Marketplace template details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/marketplace/publish:
+    post:
+      tags: [Compute]
+      summary: Publish a template to the marketplace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                templateId:
+                  type: string
+                category:
+                  type: string
+                  nullable: true
+              required: [templateId]
+      responses:
+        '200':
+          description: Template published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/marketplace/unpublish:
+    post:
+      tags: [Compute]
+      summary: Unpublish a template from the marketplace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Template unpublished
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Metrics ───────────────────────────────────────────────────────
+
+  /api/compute/metrics:
+    get:
+      tags: [Compute]
+      summary: Get compute platform metrics (admin)
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: period
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Platform metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/metrics/job:
+    post:
+      tags: [Compute]
+      summary: Get metrics for a specific job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Job metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/metrics/node:
+    post:
+      tags: [Compute]
+      summary: Get metrics for a specific node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Node metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Billing ───────────────────────────────────────────────────────
+
+  /api/compute/billing/usage:
+    post:
+      tags: [Compute]
+      summary: Get compute billing usage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                startDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        '200':
+          description: Billing usage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/billing/invoice:
+    post:
+      tags: [Compute]
+      summary: Get compute billing invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Billing invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/billing/invoices:
+    get:
+      tags: [Compute]
+      summary: List compute billing invoices
+      responses:
+        '200':
+          description: Invoice list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Credits ───────────────────────────────────────────────────────
+
+  /api/compute/credit/balance:
+    get:
+      tags: [Compute]
+      summary: Get compute credit balance
+      responses:
+        '200':
+          description: Credit balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/credit/add:
+    post:
+      tags: [Compute]
+      summary: Add compute credits
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: double
+                paymentMethodId:
+                  type: string
+                  nullable: true
+              required: [amount]
+      responses:
+        '200':
+          description: Credits added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/credit/history:
+    get:
+      tags: [Compute]
+      summary: Get compute credit history
+      responses:
+        '200':
+          description: Credit history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute API Keys ──────────────────────────────────────────────────────
+
+  /api/compute/api-key/create:
+    post:
+      tags: [Compute]
+      summary: Create a compute API key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+              required: [name]
+      responses:
+        '200':
+          description: API key created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/api-key/revoke:
+    post:
+      tags: [Compute]
+      summary: Revoke a compute API key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: API key revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/api-key/list:
+    get:
+      tags: [Compute]
+      summary: List compute API keys
+      responses:
+        '200':
+          description: API key list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Agent Versions ────────────────────────────────────────────────
+
+  /api/compute/agent-version/register:
+    post:
+      tags: [Compute]
+      summary: Register a compute agent version
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                version:
+                  type: string
+                changelog:
+                  type: string
+                  nullable: true
+                downloadUrl:
+                  type: string
+              required: [version, downloadUrl]
+      responses:
+        '200':
+          description: Agent version registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/agent-version/latest:
+    get:
+      tags: [Compute]
+      summary: Get latest compute agent version
+      responses:
+        '200':
+          description: Latest agent version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/agent-version/list:
+    get:
+      tags: [Compute]
+      summary: List compute agent versions
+      responses:
+        '200':
+          description: Agent version list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Compute Clusters ──────────────────────────────────────────────────────
+
+  /api/compute/cluster/create:
+    post:
+      tags: [Compute]
+      summary: Create a compute cluster
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                maxNodes:
+                  type: integer
+                  nullable: true
+              required: [name]
+      responses:
+        '200':
+          description: Cluster created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/cluster/update:
+    post:
+      tags: [Compute]
+      summary: Update a compute cluster
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                maxNodes:
+                  type: integer
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Cluster updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/cluster/delete:
+    post:
+      tags: [Compute]
+      summary: Delete a compute cluster
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Cluster deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/cluster/get:
+    post:
+      tags: [Compute]
+      summary: Get a compute cluster
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Cluster details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/compute/cluster/list:
+    get:
+      tags: [Compute]
+      summary: List compute clusters
+      responses:
+        '200':
+          description: Cluster list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Stripe Webhook ────────────────────────────────────────────────────────
+
+  /api/compute/stripe/webhook:
+    post:
+      tags: [Compute]
+      summary: Stripe webhook endpoint for compute billing
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

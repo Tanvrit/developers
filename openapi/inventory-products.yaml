@@ -1,0 +1,1006 @@
+paths:
+  # ── Inventory — Products ───────────────────────────────────────────────────
+
+  /api/inventory/product/CREATE_PRODUCT:
+    post:
+      tags: [Inventory Products]
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '200':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Product'
+
+  /api/inventory/product/RETRIEVE_PRODUCT:
+    post:
+      tags: [Inventory Products]
+      summary: Retrieve products
+      description: Returns products for a business, optionally filtered by store and last sync date.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+                lastSyncDate:
+                  type: string
+                  nullable: true
+                page:
+                  type: integer
+                  default: 1
+                limit:
+                  type: integer
+                  default: 50
+              required: [businessId]
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Product'
+
+  /api/inventory/product/UPDATE_PRODUCT:
+    post:
+      tags: [Inventory Products]
+      summary: Update a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                categoryId:
+                  type: string
+                  nullable: true
+                quantity:
+                  type: integer
+                  format: int64
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/Product'
+
+  /api/inventory/product/DELETE_PRODUCT:
+    post:
+      tags: [Inventory Products]
+      summary: Delete a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Product deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/product/BLACKLIST_PRODUCT:
+    post:
+      tags: [Inventory Products]
+      summary: Blacklist a product
+      description: Hides a product from the public catalog without deleting it.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                productId:
+                  type: string
+              required: [businessId, productId]
+      responses:
+        '200':
+          description: Product blacklisted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/product/list:
+    get:
+      tags: [Inventory Products]
+      summary: List products (paginated)
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Paginated product list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ── Inventory — Categories ─────────────────────────────────────────────────
+
+  /api/inventory/category/CREATE_PRODUCT_CATEGORY:
+    post:
+      tags: [Inventory Products]
+      summary: Create a product category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                businessId:
+                  type: string
+                userId:
+                  type: string
+              required: [name, businessId]
+      responses:
+        '200':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/ProductCategory'
+
+  /api/inventory/category/RETRIEVE_PRODUCT_CATEGORY:
+    post:
+      tags: [Inventory Products]
+      summary: Retrieve product categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Category list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProductCategory'
+
+  /api/inventory/category/UPDATE_PRODUCT_CATEGORY:
+    post:
+      tags: [Inventory Products]
+      summary: Update a product category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                businessId:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/category/DELETE_PRODUCT_CATEGORY:
+    post:
+      tags: [Inventory Products]
+      summary: Delete a product category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Category deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Inventory — Sub-Categories ─────────────────────────────────────────────
+
+  /api/inventory/sub_category/CREATE_PRODUCT_SUB_CATEGORY:
+    post:
+      tags: [Inventory Products]
+      summary: Create a product sub-category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                categoryId:
+                  type: string
+                businessId:
+                  type: string
+              required: [name, categoryId, businessId]
+      responses:
+        '200':
+          description: Sub-category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/sub_category/RETRIEVE_PRODUCT_SUB_CATEGORY:
+    post:
+      tags: [Inventory Products]
+      summary: Retrieve product sub-categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Sub-category list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/sub_category/UPDATE_PRODUCT_SUB_CATEGORY:
+    post:
+      tags: [Inventory Products]
+      summary: Update a product sub-category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                categoryId:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Sub-category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/sub_category/DELETE_PRODUCT_SUB_CATEGORY:
+    post:
+      tags: [Inventory Products]
+      summary: Delete a product sub-category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Sub-category deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Inventory — Brands ─────────────────────────────────────────────────────
+
+  /api/inventory/brand/CREATE_PRODUCT_BRAND:
+    post:
+      tags: [Inventory Products]
+      summary: Create a brand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+              required: [name, businessId]
+      responses:
+        '200':
+          description: Brand created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/brand/RETRIEVE_PRODUCT_BRAND:
+    post:
+      tags: [Inventory Products]
+      summary: Retrieve brands
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Brand list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/brand/UPDATE_PRODUCT_BRAND:
+    post:
+      tags: [Inventory Products]
+      summary: Update a brand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Brand updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/brand/DELETE_PRODUCT_BRAND:
+    post:
+      tags: [Inventory Products]
+      summary: Delete a brand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Brand deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/brand/list:
+    get:
+      tags: [Inventory Products]
+      summary: List brands (paginated)
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Paginated brand list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ── Inventory — Colors, Sizes, UOM ────────────────────────────────────────
+
+  /api/inventory/color/CREATE_PRODUCT_COLOR:
+    post:
+      tags: [Inventory Products]
+      summary: Create a product color
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+                hex:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+              required: [name, businessId]
+      responses:
+        '200':
+          description: Color created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/color/RETRIEVE_PRODUCT_COLOR:
+    post:
+      tags: [Inventory Products]
+      summary: Retrieve product colors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Color list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/color/UPDATE_PRODUCT_COLOR:
+    post:
+      tags: [Inventory Products]
+      summary: Update a product color
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                hex:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Color updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/color/DELETE_PRODUCT_COLOR:
+    post:
+      tags: [Inventory Products]
+      summary: Delete a product color
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Color deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/size/CREATE_PRODUCT_SIZE:
+    post:
+      tags: [Inventory Products]
+      summary: Create a product size
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                value:
+                  type: string
+                businessId:
+                  type: string
+              required: [name, businessId]
+      responses:
+        '200':
+          description: Size created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/size/RETRIEVE_PRODUCT_SIZE:
+    post:
+      tags: [Inventory Products]
+      summary: Retrieve product sizes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Size list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/size/UPDATE_PRODUCT_SIZE:
+    post:
+      tags: [Inventory Products]
+      summary: Update a product size
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                value:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Size updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/size/DELETE_PRODUCT_SIZE:
+    post:
+      tags: [Inventory Products]
+      summary: Delete a product size
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Size deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/uom/CREATE_PRODUCT_UOM:
+    post:
+      tags: [Inventory Products]
+      summary: Create a unit of measure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+              required: [name, businessId]
+      responses:
+        '200':
+          description: UOM created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/uom/RETRIEVE_PRODUCT_UOM:
+    post:
+      tags: [Inventory Products]
+      summary: Retrieve units of measure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: UOM list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/uom/UPDATE_PRODUCT_UOM:
+    post:
+      tags: [Inventory Products]
+      summary: Update a unit of measure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: UOM updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/uom/DELETE_PRODUCT_UOM:
+    post:
+      tags: [Inventory Products]
+      summary: Delete a unit of measure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: UOM deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Inventory — Barcodes ──────────────────────────────────────────────────
+
+  /api/inventory/Barcode/CREATE_PRODUCT_Barcode:
+    post:
+      tags: [Inventory Products]
+      summary: Create a barcode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                productId:
+                  type: string
+                  nullable: true
+                inventoryId:
+                  type: string
+                  nullable: true
+                barCode:
+                  type: string
+              required: [businessId, barCode]
+      responses:
+        '200':
+          description: Barcode created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/Barcode/RETRIEVE_PRODUCT_Barcode:
+    post:
+      tags: [Inventory Products]
+      summary: Retrieve barcodes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                  nullable: true
+                inventoryId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Barcode list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/Barcode/UPDATE_PRODUCT_Barcode:
+    post:
+      tags: [Inventory Products]
+      summary: Update a barcode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                barCode:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Barcode updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/Barcode/DELETE_PRODUCT_Barcode:
+    post:
+      tags: [Inventory Products]
+      summary: Delete a barcode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Barcode deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Inventory — Models ────────────────────────────────────────────────────
+
+  /api/inventory/model/RETRIEVE_PRODUCT_MODEL:
+    post:
+      tags: [Inventory Products]
+      summary: Retrieve product models
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Model list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: double
+          nullable: true
+        images:
+          type: array
+          items:
+            type: string
+        categoryId:
+          type: string
+          nullable: true
+        subCategoryId:
+          type: string
+          nullable: true
+        businessId:
+          type: string
+        storeId:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+          format: int64
+          nullable: true
+        brandId:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    CreateProductRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        businessId:
+          type: string
+        storeId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        categoryId:
+          type: string
+          nullable: true
+        subCategoryId:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+          format: int64
+          nullable: true
+      required: [userId, businessId, name]
+
+    ProductCategory:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+          nullable: true
+        businessId:
+          type: string
+        parentId:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true

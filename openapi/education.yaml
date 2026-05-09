@@ -1,0 +1,535 @@
+paths:
+  # ── Schools ───────────────────────────────────────────────────────────────
+
+  /api/education/school/create:
+    post:
+      tags: [Education]
+      summary: Create a school
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                address:
+                  type: string
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: School created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/school/update:
+    post:
+      tags: [Education]
+      summary: Update a school
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                address:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: School updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/school/get:
+    post:
+      tags: [Education]
+      summary: Get a school
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: School details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/school/list:
+    post:
+      tags: [Education]
+      summary: List schools for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: School list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/school/delete:
+    post:
+      tags: [Education]
+      summary: Delete a school
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: School deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Classes ───────────────────────────────────────────────────────────────
+
+  /api/education/class/create:
+    post:
+      tags: [Education]
+      summary: Create a class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schoolId:
+                  type: string
+                name:
+                  type: string
+                grade:
+                  type: string
+                  nullable: true
+                section:
+                  type: string
+                  nullable: true
+                teacherId:
+                  type: string
+                  nullable: true
+              required: [schoolId, name]
+      responses:
+        '200':
+          description: Class created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/class/update:
+    post:
+      tags: [Education]
+      summary: Update a class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                section:
+                  type: string
+                  nullable: true
+                teacherId:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Class updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/class/get:
+    post:
+      tags: [Education]
+      summary: Get a class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Class details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/class/list:
+    post:
+      tags: [Education]
+      summary: List classes for a school
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schoolId:
+                  type: string
+              required: [schoolId]
+      responses:
+        '200':
+          description: Class list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/class/delete:
+    post:
+      tags: [Education]
+      summary: Delete a class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Class deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/class/enroll:
+    post:
+      tags: [Education]
+      summary: Enroll a student in a class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                classId:
+                  type: string
+                studentId:
+                  type: string
+              required: [classId, studentId]
+      responses:
+        '200':
+          description: Student enrolled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/class/unenroll:
+    post:
+      tags: [Education]
+      summary: Unenroll a student from a class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                classId:
+                  type: string
+                studentId:
+                  type: string
+              required: [classId, studentId]
+      responses:
+        '200':
+          description: Student unenrolled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Exams ─────────────────────────────────────────────────────────────────
+
+  /api/education/exam/create:
+    post:
+      tags: [Education]
+      summary: Create an exam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                classId:
+                  type: string
+                name:
+                  type: string
+                subject:
+                  type: string
+                  nullable: true
+                scheduledAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+                maxMarks:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [classId, name]
+      responses:
+        '200':
+          description: Exam created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/exam/update:
+    post:
+      tags: [Education]
+      summary: Update an exam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                scheduledAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+                maxMarks:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Exam updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/exam/get:
+    post:
+      tags: [Education]
+      summary: Get an exam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Exam details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/exam/list:
+    post:
+      tags: [Education]
+      summary: List exams for a class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                classId:
+                  type: string
+              required: [classId]
+      responses:
+        '200':
+          description: Exam list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/exam/delete:
+    post:
+      tags: [Education]
+      summary: Delete an exam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Exam deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Grades ────────────────────────────────────────────────────────────────
+
+  /api/education/grade/submit:
+    post:
+      tags: [Education]
+      summary: Submit a grade for a student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                examId:
+                  type: string
+                studentId:
+                  type: string
+                marksObtained:
+                  type: number
+                  format: double
+                remarks:
+                  type: string
+                  nullable: true
+              required: [examId, studentId, marksObtained]
+      responses:
+        '200':
+          description: Grade submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/grade/update:
+    post:
+      tags: [Education]
+      summary: Update a grade
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                marksObtained:
+                  type: number
+                  format: double
+                  nullable: true
+                remarks:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Grade updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/grade/get:
+    post:
+      tags: [Education]
+      summary: Get grades for a student or exam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                examId:
+                  type: string
+                  nullable: true
+                studentId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Grade list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/education/grade/report:
+    post:
+      tags: [Education]
+      summary: Get grade report for a student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                studentId:
+                  type: string
+                classId:
+                  type: string
+                  nullable: true
+              required: [studentId]
+      responses:
+        '200':
+          description: Grade report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

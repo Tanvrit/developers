@@ -1,0 +1,1761 @@
+paths:
+  # ── Inventory Store (stock levels) ────────────────────────────────────────
+
+  /api/inventory/store_inventory/CREATE_PRODUCT_INVENTORY:
+    post:
+      tags: [Inventory Stock]
+      summary: Create an inventory record
+      description: Creates a stock record for a product in a store.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                inventoryId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Inventory record created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/store_inventory/RETRIEVE_PRODUCT_INVENTORY:
+    post:
+      tags: [Inventory Stock]
+      summary: Retrieve an inventory record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inventoryId:
+                  type: string
+                businessId:
+                  type: string
+      responses:
+        '200':
+          description: Inventory record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/store_inventory/UPDATE_PRODUCT_INVENTORY:
+    post:
+      tags: [Inventory Stock]
+      summary: Update an inventory record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inventoryId:
+                  type: string
+                businessId:
+                  type: string
+      responses:
+        '200':
+          description: Inventory updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/store_inventory/DELETE_PRODUCT_INVENTORY:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete an inventory record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inventoryId:
+                  type: string
+                businessId:
+                  type: string
+      responses:
+        '200':
+          description: Inventory deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Inventory Batches ─────────────────────────────────────────────────────
+
+  /api/inventory/batch/create:
+    post:
+      tags: [Inventory Stock]
+      summary: Create an inventory batch
+      description: Creates a batch (lot/shipment) for an inventory item with expiry tracking.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                inventoryId:
+                  type: string
+                batchNumber:
+                  type: string
+                quantity:
+                  type: integer
+                  format: int64
+                expiryDate:
+                  type: string
+                  format: date
+                  nullable: true
+              required: [businessId, inventoryId, batchNumber]
+      responses:
+        '200':
+          description: Batch created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/batch/update:
+    post:
+      tags: [Inventory Stock]
+      summary: Update an inventory batch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                batchNumber:
+                  type: string
+                  nullable: true
+                quantity:
+                  type: integer
+                  format: int64
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Batch updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/batch/retrieve:
+    post:
+      tags: [Inventory Stock]
+      summary: Retrieve a batch by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Batch details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/batch/delete:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete a batch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Batch deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/batch/by-inventory:
+    post:
+      tags: [Inventory Stock]
+      summary: List batches for an inventory item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inventoryId:
+                  type: string
+              required: [inventoryId]
+      responses:
+        '200':
+          description: Batch list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/batch/list:
+    post:
+      tags: [Inventory Stock]
+      summary: List all batches for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Batch list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/batch/expiring-soon:
+    get:
+      tags: [Inventory Stock]
+      summary: Get batches expiring soon
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: daysAhead
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: Expiring batches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/batch/consume:
+    post:
+      tags: [Inventory Stock]
+      summary: FIFO consume from batches
+      description: Deducts quantity using FIFO (oldest batch first).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inventoryId:
+                  type: string
+                quantity:
+                  type: integer
+                  format: int64
+              required: [inventoryId, quantity]
+      responses:
+        '200':
+          description: Quantity consumed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/batch/expiry-report:
+    get:
+      tags: [Inventory Stock]
+      summary: Get batch expiry report
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expiry report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Stock Audits ──────────────────────────────────────────────────────────
+
+  /api/inventory/audit/CREATE:
+    post:
+      tags: [Inventory Stock]
+      summary: Create a stock audit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+                conductedBy:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Audit created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/audit/RETRIEVE:
+    post:
+      tags: [Inventory Stock]
+      summary: Retrieve stock audit details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Audit details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/audit/DELETE:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete a stock audit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Audit deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/audit/record-count:
+    post:
+      tags: [Inventory Stock]
+      summary: Record physical stock count
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                auditId:
+                  type: string
+                itemId:
+                  type: string
+                physicalQuantity:
+                  type: integer
+                  format: int64
+              required: [auditId, itemId, physicalQuantity]
+      responses:
+        '200':
+          description: Count recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/audit/complete:
+    post:
+      tags: [Inventory Stock]
+      summary: Complete a stock audit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Audit completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/audit/apply:
+    post:
+      tags: [Inventory Stock]
+      summary: Apply audit adjustments
+      description: Applies discrepancy adjustments found during the audit to actual stock levels.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Adjustments applied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/audit/report:
+    post:
+      tags: [Inventory Stock]
+      summary: Generate audit report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Audit report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Stock Health ──────────────────────────────────────────────────────────
+
+  /api/inventory/health/report:
+    get:
+      tags: [Inventory Stock]
+      summary: Get stock health report
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: storeId
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Stock health report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/health/analyze:
+    post:
+      tags: [Inventory Stock]
+      summary: Analyze and persist stock health
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Analysis complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/health/dead-stock:
+    get:
+      tags: [Inventory Stock]
+      summary: Get dead stock items
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dead stock list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/health/valuation:
+    get:
+      tags: [Inventory Stock]
+      summary: Get stock valuation
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Stock valuation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Inventory Velocity ────────────────────────────────────────────────────
+
+  /api/inventory/velocity/report:
+    get:
+      tags: [Inventory Stock]
+      summary: Get inventory velocity report
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Velocity report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/velocity/calculate:
+    post:
+      tags: [Inventory Stock]
+      summary: Calculate inventory velocity metrics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                storeId:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Velocity metrics calculated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Restock Alerts ────────────────────────────────────────────────────────
+
+  /api/inventory/restock/create:
+    post:
+      tags: [Inventory Stock]
+      summary: Create a restock alert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                inventoryId:
+                  type: string
+                threshold:
+                  type: integer
+                  format: int64
+              required: [businessId, inventoryId]
+      responses:
+        '200':
+          description: Restock alert created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/restock/retrieve:
+    post:
+      tags: [Inventory Stock]
+      summary: List restock alerts for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Restock alert list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/restock/update:
+    post:
+      tags: [Inventory Stock]
+      summary: Update a restock alert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                threshold:
+                  type: integer
+                  format: int64
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Restock alert updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/restock/delete:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete a restock alert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Restock alert deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/restock/check:
+    post:
+      tags: [Inventory Stock]
+      summary: Check and generate restock alerts
+      description: Evaluates current stock levels and generates alerts for items below threshold.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Alerts generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Suppliers ─────────────────────────────────────────────────────────────
+
+  /api/inventory/supplier/create:
+    post:
+      tags: [Inventory Stock]
+      summary: Create a supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                  nullable: true
+                mobile:
+                  type: string
+                  nullable: true
+                address:
+                  type: string
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Supplier created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/supplier/update:
+    post:
+      tags: [Inventory Stock]
+      summary: Update a supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Supplier updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/supplier/delete:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete a supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Supplier deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/supplier/get:
+    post:
+      tags: [Inventory Stock]
+      summary: Retrieve a supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Supplier details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/supplier/list:
+    post:
+      tags: [Inventory Stock]
+      summary: List suppliers for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Supplier list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/supplier/search:
+    post:
+      tags: [Inventory Stock]
+      summary: Search suppliers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                query:
+                  type: string
+              required: [businessId, query]
+      responses:
+        '200':
+          description: Matching suppliers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Purchase Orders ───────────────────────────────────────────────────────
+
+  /api/inventory/purchase-order/create:
+    post:
+      tags: [Inventory Stock]
+      summary: Create a purchase order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                supplierId:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      inventoryId:
+                        type: string
+                      quantity:
+                        type: integer
+                        format: int64
+                      unitCost:
+                        type: integer
+                        format: int64
+              required: [businessId, supplierId, items]
+      responses:
+        '200':
+          description: Purchase order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/purchase-order/update:
+    post:
+      tags: [Inventory Stock]
+      summary: Update a purchase order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required: [id]
+      responses:
+        '200':
+          description: Purchase order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/purchase-order/delete:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete a purchase order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Purchase order deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/purchase-order/get:
+    post:
+      tags: [Inventory Stock]
+      summary: Retrieve a purchase order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Purchase order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/purchase-order/list:
+    post:
+      tags: [Inventory Stock]
+      summary: List purchase orders for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Purchase order list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/purchase-order/send:
+    post:
+      tags: [Inventory Stock]
+      summary: Send a purchase order to supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Purchase order sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/purchase-order/receive:
+    post:
+      tags: [Inventory Stock]
+      summary: Receive purchase order items
+      description: Records receipt of items from a purchase order and updates stock.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      inventoryId:
+                        type: string
+                      receivedQuantity:
+                        type: integer
+                        format: int64
+              required: [id, items]
+      responses:
+        '200':
+          description: Items received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/inventory/purchase-order/cancel:
+    post:
+      tags: [Inventory Stock]
+      summary: Cancel a purchase order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Purchase order cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Warehouses ────────────────────────────────────────────────────────────
+
+  /api/warehouse/create:
+    post:
+      tags: [Inventory Stock]
+      summary: Create a warehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                address:
+                  type: string
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Warehouse created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/update:
+    post:
+      tags: [Inventory Stock]
+      summary: Update a warehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Warehouse updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/delete:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete a warehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Warehouse deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/get:
+    post:
+      tags: [Inventory Stock]
+      summary: Retrieve a warehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Warehouse details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/list:
+    post:
+      tags: [Inventory Stock]
+      summary: List warehouses for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Warehouse list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/search:
+    post:
+      tags: [Inventory Stock]
+      summary: Search warehouses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                query:
+                  type: string
+              required: [businessId, query]
+      responses:
+        '200':
+          description: Matching warehouses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Warehouse Stock ───────────────────────────────────────────────────────
+
+  /api/warehouse/stock/create:
+    post:
+      tags: [Inventory Stock]
+      summary: Create warehouse stock record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                warehouseId:
+                  type: string
+                businessId:
+                  type: string
+              required: [warehouseId, businessId]
+      responses:
+        '200':
+          description: Stock record created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/stock/update:
+    post:
+      tags: [Inventory Stock]
+      summary: Update warehouse stock record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required: [id]
+      responses:
+        '200':
+          description: Stock record updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/stock/delete:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete warehouse stock record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Stock record deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/stock/get:
+    post:
+      tags: [Inventory Stock]
+      summary: Retrieve warehouse stock record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Stock record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/stock/list-by-warehouse:
+    post:
+      tags: [Inventory Stock]
+      summary: List stock by warehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                warehouseId:
+                  type: string
+              required: [warehouseId]
+      responses:
+        '200':
+          description: Stock list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/stock/list-by-product:
+    post:
+      tags: [Inventory Stock]
+      summary: List stock by product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                businessId:
+                  type: string
+              required: [productId, businessId]
+      responses:
+        '200':
+          description: Stock list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Transfer Orders ───────────────────────────────────────────────────────
+
+  /api/warehouse/transfer-order/create:
+    post:
+      tags: [Inventory Stock]
+      summary: Create a transfer order
+      description: Creates a stock transfer between two warehouses.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                fromWarehouseId:
+                  type: string
+                toWarehouseId:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      inventoryId:
+                        type: string
+                      quantity:
+                        type: integer
+                        format: int64
+              required: [businessId, fromWarehouseId, toWarehouseId, items]
+      responses:
+        '200':
+          description: Transfer order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/transfer-order/update:
+    post:
+      tags: [Inventory Stock]
+      summary: Update a transfer order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required: [id]
+      responses:
+        '200':
+          description: Transfer order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/transfer-order/delete:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete a transfer order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Transfer order deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/transfer-order/get:
+    post:
+      tags: [Inventory Stock]
+      summary: Retrieve a transfer order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Transfer order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/transfer-order/list:
+    post:
+      tags: [Inventory Stock]
+      summary: List transfer orders for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Transfer order list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/transfer-order/ship:
+    post:
+      tags: [Inventory Stock]
+      summary: Ship a transfer order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Transfer order shipped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/transfer-order/receive:
+    post:
+      tags: [Inventory Stock]
+      summary: Receive transfer order items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+              required: [id, items]
+      responses:
+        '200':
+          description: Items received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/warehouse/transfer-order/cancel:
+    post:
+      tags: [Inventory Stock]
+      summary: Cancel a transfer order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Transfer order cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Storage Locations ─────────────────────────────────────────────────────
+
+  /api/storage-location/create:
+    post:
+      tags: [Inventory Stock]
+      summary: Create a storage location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                warehouseId:
+                  type: string
+                businessId:
+                  type: string
+                zone:
+                  type: string
+                  nullable: true
+                aisle:
+                  type: string
+                  nullable: true
+                shelf:
+                  type: string
+                  nullable: true
+                bin:
+                  type: string
+                  nullable: true
+              required: [warehouseId, businessId]
+      responses:
+        '200':
+          description: Storage location created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/storage-location/update:
+    post:
+      tags: [Inventory Stock]
+      summary: Update a storage location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required: [id]
+      responses:
+        '200':
+          description: Storage location updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/storage-location/delete:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete a storage location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Storage location deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/storage-location/get:
+    post:
+      tags: [Inventory Stock]
+      summary: Retrieve a storage location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Storage location details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/storage-location/list-by-warehouse:
+    post:
+      tags: [Inventory Stock]
+      summary: List storage locations by warehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                warehouseId:
+                  type: string
+              required: [warehouseId]
+      responses:
+        '200':
+          description: Storage location list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/storage-location/list-by-zone:
+    post:
+      tags: [Inventory Stock]
+      summary: List storage locations by zone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                warehouseId:
+                  type: string
+                zone:
+                  type: string
+              required: [warehouseId, zone]
+      responses:
+        '200':
+          description: Storage locations in zone
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Bin Assignments ───────────────────────────────────────────────────────
+
+  /api/bin-assignment/create:
+    post:
+      tags: [Inventory Stock]
+      summary: Create a bin assignment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                locationId:
+                  type: string
+                productId:
+                  type: string
+              required: [locationId, productId]
+      responses:
+        '200':
+          description: Bin assignment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/bin-assignment/update:
+    post:
+      tags: [Inventory Stock]
+      summary: Update a bin assignment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required: [id]
+      responses:
+        '200':
+          description: Bin assignment updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/bin-assignment/delete:
+    post:
+      tags: [Inventory Stock]
+      summary: Delete a bin assignment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Bin assignment deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/bin-assignment/get:
+    post:
+      tags: [Inventory Stock]
+      summary: Retrieve a bin assignment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Bin assignment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/bin-assignment/list-by-location:
+    post:
+      tags: [Inventory Stock]
+      summary: List bin assignments by location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                locationId:
+                  type: string
+              required: [locationId]
+      responses:
+        '200':
+          description: Bin assignments at location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/bin-assignment/list-by-product:
+    post:
+      tags: [Inventory Stock]
+      summary: List bin assignments by product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+              required: [productId]
+      responses:
+        '200':
+          description: Bin assignments for product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

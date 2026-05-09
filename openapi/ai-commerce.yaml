@@ -1,0 +1,1029 @@
+paths:
+  # ── AI Commerce Gateway — Public Catalog ──────────────────────────────────
+
+  /api/ai/v1/:
+    get:
+      tags: [AI Commerce]
+      summary: AI Commerce developer landing page
+      description: HTML page with route documentation and integration instructions.
+      security: []
+      responses:
+        '200':
+          description: HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /api/ai/v1/openapi.json:
+    get:
+      tags: [AI Commerce]
+      summary: AI Commerce OpenAPI spec
+      description: Returns the OpenAPI 3.1.0 specification for the AI Commerce Gateway. Paste this URL into ChatGPT Actions or any OpenAPI-compatible tool.
+      security: []
+      responses:
+        '200':
+          description: OpenAPI spec JSON
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/ai/v1/catalog/{businessId}/products:
+    get:
+      tags: [AI Commerce]
+      summary: Browse catalog products
+      description: Returns publicly visible products for a business. No authentication required.
+      security: []
+      parameters:
+        - in: path
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: search
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: inStock
+          schema:
+            type: boolean
+            nullable: true
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiProductListResponse'
+
+  /api/ai/v1/catalog/{businessId}/products/{productId}:
+    get:
+      tags: [AI Commerce]
+      summary: Get catalog product detail
+      description: Returns a single product with pricing for a business. No authentication required.
+      security: []
+      parameters:
+        - in: path
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiProduct'
+
+  # ── AI Commerce Gateway — Analytics (X-API-Key, READ_ANALYTICS) ───────────
+
+  /api/ai/v1/analytics/summary:
+    get:
+      tags: [AI Commerce]
+      summary: Business analytics summary
+      description: Returns revenue, orders, customers, and top products for a date range. Requires READ_ANALYTICS scope.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: startDate
+          description: Start of date range in epoch milliseconds
+          schema:
+            type: integer
+            format: int64
+            nullable: true
+        - in: query
+          name: endDate
+          description: End of date range in epoch milliseconds
+          schema:
+            type: integer
+            format: int64
+            nullable: true
+      responses:
+        '200':
+          description: Analytics summary
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiAnalyticsSummary'
+
+  # ── AI Commerce Gateway — Customers (X-API-Key, READ_CUSTOMERS) ───────────
+
+  /api/ai/v1/customers:
+    get:
+      tags: [AI Commerce]
+      summary: List customers
+      description: Returns a paginated list of customers for the merchant's business. Requires READ_CUSTOMERS scope.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: search
+          description: Filter by name or mobile
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Customer list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiCustomerListResponse'
+
+  /api/ai/v1/customers/{customerId}:
+    get:
+      tags: [AI Commerce]
+      summary: Get customer detail
+      description: Returns a single customer record. Requires READ_CUSTOMERS scope.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Customer detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiCustomerSummary'
+
+  # ── AI Commerce Gateway — Orders (X-API-Key) ──────────────────────────────
+
+  /api/ai/v1/orders:
+    get:
+      tags: [AI Commerce]
+      summary: List orders
+      description: Returns a paginated list of orders, optionally filtered by status. Requires READ_ORDERS scope.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: status
+          description: Filter by order status
+          schema:
+            type: string
+            nullable: true
+            enum: [PLACED, CONFIRMED, PREPARING, READY, DISPATCHED, DELIVERED, CANCELLED, DECLINED]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Order list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiOrderListResponse'
+
+  /api/ai/v1/orders/{orderId}:
+    get:
+      tags: [AI Commerce]
+      summary: Get order detail
+      description: Returns full order detail including customer info and line items. Requires READ_ORDERS scope.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiOrderDetail'
+
+  /api/ai/v1/orders/{orderId}/confirm:
+    post:
+      tags: [AI Commerce]
+      summary: Confirm an order
+      description: Transitions an order from PLACED to CONFIRMED. Requires WRITE_ORDERS scope.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order confirmed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiOrderSummary'
+
+  /api/ai/v1/orders/{orderId}/decline:
+    post:
+      tags: [AI Commerce]
+      summary: Decline an order
+      description: Declines an order with a reason. Requires WRITE_ORDERS scope.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiDeclineOrderRequest'
+      responses:
+        '200':
+          description: Order declined
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiOrderSummary'
+
+  # ── AI Commerce Gateway — Products (X-API-Key) ────────────────────────────
+
+  /api/ai/v1/products:
+    get:
+      tags: [AI Commerce]
+      summary: List merchant products
+      description: Returns all products for the merchant's business with pricing. Requires READ_PRODUCTS scope.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: search
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiProductListResponse'
+
+  /api/ai/v1/products/{productId}:
+    get:
+      tags: [AI Commerce]
+      summary: Get merchant product detail
+      description: Returns a single merchant product with pricing. Requires READ_PRODUCTS scope.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiProduct'
+
+  /api/ai/v1/products/{productId}/inventory:
+    patch:
+      tags: [AI Commerce]
+      summary: Update product stock quantity
+      description: Updates the stock quantity for a product. Requires WRITE_PRODUCTS scope.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  format: int64
+                  minimum: 0
+              required: [quantity]
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiProduct'
+
+  # ── AI Commerce Gateway — Key Management (JWT) ────────────────────────────
+
+  /api/ai/v1/keys:
+    post:
+      tags: [AI Commerce]
+      summary: Create AI API key
+      description: Creates a scoped API key (fai_ prefix) for AI agent access. JWT auth required.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAiApiKeyRequest'
+      responses:
+        '200':
+          description: API key created (raw key shown only once)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiApiKeyCreatedResponse'
+    get:
+      tags: [AI Commerce]
+      summary: List AI API keys
+      description: Returns all API keys for a business (metadata only, no raw key). JWT auth required.
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Key list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiApiKeyListResponse'
+
+  /api/ai/v1/keys/{keyId}:
+    get:
+      tags: [AI Commerce]
+      summary: Get API key metadata
+      description: Returns metadata for a single key. Raw key is never returned after creation. JWT auth required.
+      parameters:
+        - in: path
+          name: keyId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Key metadata
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiApiKeyResponse'
+    delete:
+      tags: [AI Commerce]
+      summary: Revoke API key
+      description: Permanently revokes an API key. JWT auth required.
+      parameters:
+        - in: path
+          name: keyId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Key revoked
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: object
+                        properties:
+                          keyId:
+                            type: string
+                          revoked:
+                            type: boolean
+
+  # ── AI Commerce Gateway — Cart (JWT) ──────────────────────────────────────
+
+  /api/ai/v1/cart:
+    get:
+      tags: [AI Commerce]
+      summary: View cart
+      description: Returns the customer's cart with product enrichment and total. JWT auth required.
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: storeId
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Cart summary
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiCartSummary'
+
+  /api/ai/v1/cart/items:
+    post:
+      tags: [AI Commerce]
+      summary: Add item to cart
+      description: Adds a product to the customer's cart. JWT auth required.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiAddToCartRequest'
+      responses:
+        '200':
+          description: Item added
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiCartItem'
+
+  /api/ai/v1/cart/items/{itemId}/quantity:
+    patch:
+      tags: [AI Commerce]
+      summary: Update cart item quantity
+      description: Updates the quantity of a specific cart item. JWT auth required.
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 1
+              required: [quantity]
+      responses:
+        '200':
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiCartItem'
+
+  /api/ai/v1/cart/items/{itemId}:
+    delete:
+      tags: [AI Commerce]
+      summary: Remove cart item
+      description: Removes a specific item from the customer's cart. JWT auth required.
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Item removed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: object
+                        properties:
+                          itemId:
+                            type: string
+                          removed:
+                            type: boolean
+
+  /api/ai/v1/cart/checkout:
+    post:
+      tags: [AI Commerce]
+      summary: Checkout cart
+      description: Converts the cart to an order and clears it. JWT auth required.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiCheckoutRequest'
+      responses:
+        '200':
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/AiCheckoutResult'
+
+components:
+  schemas:
+    AiProduct:
+      type: object
+      properties:
+        productId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+          format: int64
+        price:
+          type: number
+          format: double
+        currencySymbol:
+          type: string
+          example: "₹"
+        images:
+          type: array
+          items:
+            type: string
+        categoryId:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+
+    AiProductListResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/AiProduct'
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        hasMore:
+          type: boolean
+
+    AiAnalyticsSummary:
+      type: object
+      properties:
+        totalRevenue:
+          type: number
+          format: double
+        totalOrders:
+          type: integer
+        totalCustomers:
+          type: integer
+        pendingOrders:
+          type: integer
+        averageOrderValue:
+          type: number
+          format: double
+        totalProducts:
+          type: integer
+        topProducts:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+              name:
+                type: string
+              totalSold:
+                type: integer
+        revenueByDate:
+          type: object
+          additionalProperties:
+            type: number
+        ordersByStatus:
+          type: object
+          additionalProperties:
+            type: integer
+
+    AiCustomerSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        mobile:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        totalOrders:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    AiCustomerListResponse:
+      type: object
+      properties:
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/AiCustomerSummary'
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        hasMore:
+          type: boolean
+
+    AiOrderSummary:
+      type: object
+      properties:
+        orderId:
+          type: string
+        orderNumber:
+          type: string
+        status:
+          type: string
+        totalAmount:
+          type: number
+          format: double
+
+    AiOrderDetail:
+      allOf:
+        - $ref: '#/components/schemas/AiOrderSummary'
+        - type: object
+          properties:
+            customerName:
+              type: string
+              nullable: true
+            customerMobile:
+              type: string
+              nullable: true
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  productId:
+                    type: string
+                  name:
+                    type: string
+                  quantity:
+                    type: integer
+                  unitPrice:
+                    type: number
+                    format: double
+                  lineTotal:
+                    type: number
+                    format: double
+            createdAt:
+              type: string
+              format: date-time
+              nullable: true
+
+    AiOrderListResponse:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/AiOrderSummary'
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        hasMore:
+          type: boolean
+
+    AiDeclineOrderRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: OUT_OF_STOCK
+        reasonDescription:
+          type: string
+          nullable: true
+      required: [reason]
+
+    CreateAiApiKeyRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+        label:
+          type: string
+          example: "My ChatGPT Plugin Key"
+        scopes:
+          type: array
+          items:
+            type: string
+            enum: [READ_ORDERS, WRITE_ORDERS, READ_PRODUCTS, WRITE_PRODUCTS, READ_ANALYTICS, READ_CUSTOMERS]
+        expiresInDays:
+          type: integer
+          nullable: true
+          description: Omit for no expiry
+      required: [businessId, label, scopes]
+
+    AiApiKeyCreatedResponse:
+      type: object
+      properties:
+        keyId:
+          type: string
+        apiKey:
+          type: string
+          description: Raw key — shown only once at creation
+        keyPrefix:
+          type: string
+          example: fai_
+        label:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        businessId:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    AiApiKeyResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        keyPrefix:
+          type: string
+        label:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        isRevoked:
+          type: boolean
+
+    AiApiKeyListResponse:
+      type: object
+      properties:
+        keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/AiApiKeyResponse'
+
+    AiCartItem:
+      type: object
+      properties:
+        cartItemId:
+          type: string
+        productId:
+          type: string
+        productName:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+          format: double
+        lineTotal:
+          type: number
+          format: double
+        currencySymbol:
+          type: string
+
+    AiCartSummary:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AiCartItem'
+        itemCount:
+          type: integer
+        total:
+          type: number
+          format: double
+        businessId:
+          type: string
+        storeId:
+          type: string
+          nullable: true
+
+    AiAddToCartRequest:
+      type: object
+      properties:
+        productId:
+          type: string
+        businessId:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        storeId:
+          type: string
+          nullable: true
+        priceId:
+          type: string
+          nullable: true
+      required: [productId, businessId, quantity]
+
+    AiCheckoutRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+        storeId:
+          type: string
+          nullable: true
+      required: [businessId]
+
+    AiCheckoutResult:
+      type: object
+      properties:
+        orderId:
+          type: string
+        orderNumber:
+          type: string
+        status:
+          type: string
+        totalAmount:
+          type: number
+          format: double
+        message:
+          type: string
+          nullable: true

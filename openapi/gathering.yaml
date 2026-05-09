@@ -1,0 +1,1404 @@
+paths:
+  # ── Gatherings ────────────────────────────────────────────────────────────
+
+  /api/gathering/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Create a gathering
+      description: Creates a new gathering (event, wedding, etc.).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                organizerUserId:
+                  type: string
+                title:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                type:
+                  type: string
+                  nullable: true
+                date:
+                  type: string
+                  format: date-time
+                  nullable: true
+                venue:
+                  type: string
+                  nullable: true
+              required: [organizerUserId, title]
+      responses:
+        '200':
+          description: Gathering created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/UPDATE:
+    post:
+      tags: [Gathering]
+      summary: Update a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                date:
+                  type: string
+                  format: date-time
+                  nullable: true
+                venue:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Gathering updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve gatherings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                organizerUserId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Gathering list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/DELETE:
+    post:
+      tags: [Gathering]
+      summary: Delete a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Gathering deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/PUBLISH:
+    post:
+      tags: [Gathering]
+      summary: Publish a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Gathering published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/SUMMARY:
+    post:
+      tags: [Gathering]
+      summary: Get gathering summary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Gathering summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Gathering Events ──────────────────────────────────────────────────────
+
+  /api/gathering/event/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Create a gathering event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                name:
+                  type: string
+                date:
+                  type: string
+                  format: date-time
+                venue:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+              required: [gatheringId, name, date]
+      responses:
+        '200':
+          description: Gathering event created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/event/UPDATE:
+    post:
+      tags: [Gathering]
+      summary: Update a gathering event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                date:
+                  type: string
+                  format: date-time
+                  nullable: true
+                venue:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Gathering event updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/event/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve gathering events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                gatheringId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Event list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/event/DELETE:
+    post:
+      tags: [Gathering]
+      summary: Delete a gathering event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Gathering event deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Attendees ─────────────────────────────────────────────────────────────
+
+  /api/gathering/attendee/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Add an attendee to a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                name:
+                  type: string
+                mobile:
+                  type: string
+                  nullable: true
+                dialCode:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+                affiliation:
+                  type: string
+                  nullable: true
+                role:
+                  type: string
+                  nullable: true
+              required: [gatheringId, name]
+      responses:
+        '200':
+          description: Attendee added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/attendee/UPDATE:
+    post:
+      tags: [Gathering]
+      summary: Update an attendee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                mobile:
+                  type: string
+                  nullable: true
+                affiliation:
+                  type: string
+                  nullable: true
+                role:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Attendee updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/attendee/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve attendees
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                gatheringId:
+                  type: string
+                  nullable: true
+                affiliation:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Attendee list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/attendee/DELETE:
+    post:
+      tags: [Gathering]
+      summary: Remove an attendee from a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Attendee removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/attendee/IMPORT:
+    post:
+      tags: [Gathering]
+      summary: Bulk import attendees
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                attendees:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      mobile:
+                        type: string
+                        nullable: true
+                      email:
+                        type: string
+                        nullable: true
+              required: [gatheringId, attendees]
+      responses:
+        '200':
+          description: Attendees imported
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Attendee Groups ───────────────────────────────────────────────────────
+
+  /api/gathering/attendee-group/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Create an attendee group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                name:
+                  type: string
+              required: [gatheringId, name]
+      responses:
+        '200':
+          description: Attendee group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/attendee-group/UPDATE:
+    post:
+      tags: [Gathering]
+      summary: Update an attendee group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Attendee group updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/attendee-group/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve attendee groups
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Attendee group list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/attendee-group/DELETE:
+    post:
+      tags: [Gathering]
+      summary: Delete an attendee group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Attendee group deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/attendee-group/ADD_MEMBER:
+    post:
+      tags: [Gathering]
+      summary: Add member to attendee group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                groupId:
+                  type: string
+                attendeeId:
+                  type: string
+              required: [groupId, attendeeId]
+      responses:
+        '200':
+          description: Member added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/attendee-group/REMOVE_MEMBER:
+    post:
+      tags: [Gathering]
+      summary: Remove member from attendee group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                groupId:
+                  type: string
+                attendeeId:
+                  type: string
+              required: [groupId, attendeeId]
+      responses:
+        '200':
+          description: Member removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── RSVPs ─────────────────────────────────────────────────────────────────
+
+  /api/gathering/rsvp/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Create an RSVP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                attendeeId:
+                  type: string
+                status:
+                  type: string
+                  example: ACCEPTED
+              required: [gatheringId, attendeeId, status]
+      responses:
+        '200':
+          description: RSVP created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/rsvp/UPDATE:
+    post:
+      tags: [Gathering]
+      summary: Update an RSVP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                status:
+                  type: string
+              required: [id, status]
+      responses:
+        '200':
+          description: RSVP updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/rsvp/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve RSVPs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                  nullable: true
+                attendeeId:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: RSVP list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/rsvp/DELETE:
+    post:
+      tags: [Gathering]
+      summary: Delete an RSVP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: RSVP deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/rsvp/STATS:
+    post:
+      tags: [Gathering]
+      summary: Get RSVP statistics for a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: RSVP statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Check-Ins ─────────────────────────────────────────────────────────────
+
+  /api/gathering/checkin/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Check in an attendee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                attendeeId:
+                  type: string
+                eventId:
+                  type: string
+                  nullable: true
+              required: [gatheringId, attendeeId]
+      responses:
+        '200':
+          description: Attendee checked in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/checkin/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve check-in records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                  nullable: true
+                attendeeId:
+                  type: string
+                  nullable: true
+                eventId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Check-in records
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/checkin/STATS:
+    post:
+      tags: [Gathering]
+      summary: Get check-in statistics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Check-in statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/checkin/UNDO:
+    post:
+      tags: [Gathering]
+      summary: Undo check-in for an attendee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                attendeeId:
+                  type: string
+              required: [gatheringId, attendeeId]
+      responses:
+        '200':
+          description: Check-in undone
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Budgets ───────────────────────────────────────────────────────────────
+
+  /api/gathering/budget/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Create a budget item for a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                category:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                estimatedAmount:
+                  type: number
+                  format: double
+                actualAmount:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [gatheringId, category, estimatedAmount]
+      responses:
+        '200':
+          description: Budget item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/budget/UPDATE:
+    post:
+      tags: [Gathering]
+      summary: Update a budget item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                estimatedAmount:
+                  type: number
+                  format: double
+                  nullable: true
+                actualAmount:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Budget item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/budget/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve budget items for a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Budget items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/budget/DELETE:
+    post:
+      tags: [Gathering]
+      summary: Delete a budget item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Budget item deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/budget/SUMMARY:
+    post:
+      tags: [Gathering]
+      summary: Get budget summary for a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Budget summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Seating ───────────────────────────────────────────────────────────────
+
+  /api/gathering/seating/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Create a seating arrangement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                tableName:
+                  type: string
+                capacity:
+                  type: integer
+                  nullable: true
+              required: [gatheringId, tableName]
+      responses:
+        '200':
+          description: Seating arrangement created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/seating/ASSIGN:
+    post:
+      tags: [Gathering]
+      summary: Assign attendee to a seat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seatingId:
+                  type: string
+                attendeeId:
+                  type: string
+                seatNumber:
+                  type: integer
+                  nullable: true
+              required: [seatingId, attendeeId]
+      responses:
+        '200':
+          description: Attendee assigned to seat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/seating/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve seating arrangements
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Seating arrangements
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/seating/DELETE:
+    post:
+      tags: [Gathering]
+      summary: Delete a seating arrangement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Seating arrangement deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Vendors ───────────────────────────────────────────────────────────────
+
+  /api/gathering/vendor/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Add a vendor to a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                name:
+                  type: string
+                category:
+                  type: string
+                  nullable: true
+                contact:
+                  type: string
+                  nullable: true
+                amount:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [gatheringId, name]
+      responses:
+        '200':
+          description: Vendor added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/vendor/UPDATE:
+    post:
+      tags: [Gathering]
+      summary: Update a gathering vendor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                amount:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Vendor updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/vendor/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve gathering vendors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Vendor list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/vendor/DELETE:
+    post:
+      tags: [Gathering]
+      summary: Remove a vendor from a gathering
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Vendor removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Events ────────────────────────────────────────────────────────────────
+
+  /api/event/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Create a public event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                organizerUserId:
+                  type: string
+                title:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                venue:
+                  type: string
+                  nullable: true
+                isPublic:
+                  type: boolean
+                  nullable: true
+              required: [organizerUserId, title, startDate]
+      responses:
+        '200':
+          description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/event/UPDATE:
+    post:
+      tags: [Gathering]
+      summary: Update a public event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                startDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Event updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/event/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                organizerUserId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Event list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/event/DELETE:
+    post:
+      tags: [Gathering]
+      summary: Delete a public event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Event deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Bookings ──────────────────────────────────────────────────────────────
+
+  /api/event/booking/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Book an event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  type: string
+                userId:
+                  type: string
+                quantity:
+                  type: integer
+                  default: 1
+              required: [eventId, userId]
+      responses:
+        '200':
+          description: Event booked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/event/booking/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve event bookings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  type: string
+                  nullable: true
+                userId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Booking list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/event/booking/CANCEL:
+    post:
+      tags: [Gathering]
+      summary: Cancel an event booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Booking cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Invitations ───────────────────────────────────────────────────────────
+
+  /api/gathering/invitation/CREATE:
+    post:
+      tags: [Gathering]
+      summary: Create an invitation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                attendeeId:
+                  type: string
+                  nullable: true
+                message:
+                  type: string
+                  nullable: true
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Invitation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/invitation/SEND:
+    post:
+      tags: [Gathering]
+      summary: Send invitations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                attendeeIds:
+                  type: array
+                  items:
+                    type: string
+                channel:
+                  type: string
+                  example: SMS
+                  nullable: true
+              required: [gatheringId, attendeeIds]
+      responses:
+        '200':
+          description: Invitations sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/invitation/RETRIEVE:
+    post:
+      tags: [Gathering]
+      summary: Retrieve invitations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Invitation list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/gathering/invitation/RESEND:
+    post:
+      tags: [Gathering]
+      summary: Resend an invitation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Invitation resent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

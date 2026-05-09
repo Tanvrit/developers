@@ -1,0 +1,3198 @@
+paths:
+  # ── CRM Activities ────────────────────────────────────────────────────────
+
+  /api/crm/activity/create:
+    post:
+      tags: [CRM]
+      summary: Create a CRM activity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                leadId:
+                  type: string
+                  nullable: true
+                dealId:
+                  type: string
+                  nullable: true
+                contactId:
+                  type: string
+                  nullable: true
+                type:
+                  type: string
+                  example: CALL
+                title:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                scheduledAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [businessId, type, title]
+      responses:
+        '200':
+          description: Activity created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/activity/update:
+    post:
+      tags: [CRM]
+      summary: Update a CRM activity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                type:
+                  type: string
+                  nullable: true
+                scheduledAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+                completedAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Activity updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/activity/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a CRM activity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Activity deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/activity/get:
+    post:
+      tags: [CRM]
+      summary: Get a CRM activity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Activity details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/activity/list:
+    post:
+      tags: [CRM]
+      summary: List activities for an entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                leadId:
+                  type: string
+                  nullable: true
+                dealId:
+                  type: string
+                  nullable: true
+                contactId:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Activity list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/activity/complete:
+    post:
+      tags: [CRM]
+      summary: Mark an activity as complete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Activity completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/activity/upcoming:
+    post:
+      tags: [CRM]
+      summary: List upcoming activities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Upcoming activities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/activity/overdue:
+    post:
+      tags: [CRM]
+      summary: List overdue activities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Overdue activities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Analytics ─────────────────────────────────────────────────────────
+
+  /api/crm/analytics/overview:
+    get:
+      tags: [CRM]
+      summary: CRM analytics overview
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Analytics overview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/analytics/leads:
+    get:
+      tags: [CRM]
+      summary: Lead analytics
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Lead analytics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/analytics/deals:
+    get:
+      tags: [CRM]
+      summary: Deal analytics
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deal analytics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/analytics/pipeline:
+    get:
+      tags: [CRM]
+      summary: Pipeline analytics
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pipeline analytics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/analytics/activities:
+    get:
+      tags: [CRM]
+      summary: Activity analytics
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Activity analytics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/analytics/conversion:
+    get:
+      tags: [CRM]
+      summary: Conversion rate analytics
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conversion analytics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Companies ─────────────────────────────────────────────────────────
+
+  /api/crm/company/create:
+    post:
+      tags: [CRM]
+      summary: Create a CRM company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                industry:
+                  type: string
+                  nullable: true
+                website:
+                  type: string
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+                address:
+                  type: string
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Company created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/company/update:
+    post:
+      tags: [CRM]
+      summary: Update a CRM company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                industry:
+                  type: string
+                  nullable: true
+                website:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Company updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/company/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a CRM company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Company deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/company/get:
+    post:
+      tags: [CRM]
+      summary: Get a CRM company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Company details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/company/list:
+    post:
+      tags: [CRM]
+      summary: List CRM companies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Company list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/company/search:
+    post:
+      tags: [CRM]
+      summary: Search CRM companies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                query:
+                  type: string
+              required: [businessId, query]
+      responses:
+        '200':
+          description: Matching companies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/company/merge:
+    post:
+      tags: [CRM]
+      summary: Merge two CRM companies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                primaryId:
+                  type: string
+                secondaryId:
+                  type: string
+              required: [primaryId, secondaryId]
+      responses:
+        '200':
+          description: Companies merged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/company/contacts:
+    post:
+      tags: [CRM]
+      summary: List contacts for a CRM company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                companyId:
+                  type: string
+              required: [companyId]
+      responses:
+        '200':
+          description: Company contacts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Currency ──────────────────────────────────────────────────────────
+
+  /api/crm/currency/set:
+    post:
+      tags: [CRM]
+      summary: Set CRM currency for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                currency:
+                  type: string
+                  example: USD
+              required: [businessId, currency]
+      responses:
+        '200':
+          description: Currency set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/currency/get:
+    post:
+      tags: [CRM]
+      summary: Get CRM currency for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Currency details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/currency/list:
+    get:
+      tags: [CRM]
+      summary: List supported CRM currencies
+      responses:
+        '200':
+          description: Supported currencies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/currency/convert:
+    post:
+      tags: [CRM]
+      summary: Convert amount between currencies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: double
+                from:
+                  type: string
+                to:
+                  type: string
+              required: [amount, from, to]
+      responses:
+        '200':
+          description: Converted amount
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Custom Fields ─────────────────────────────────────────────────────
+
+  /api/crm/custom-field/create:
+    post:
+      tags: [CRM]
+      summary: Create a custom field
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                entityType:
+                  type: string
+                  example: LEAD
+                name:
+                  type: string
+                fieldType:
+                  type: string
+                  example: TEXT
+                required:
+                  type: boolean
+                  nullable: true
+              required: [businessId, entityType, name, fieldType]
+      responses:
+        '200':
+          description: Custom field created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/custom-field/update:
+    post:
+      tags: [CRM]
+      summary: Update a custom field
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                required:
+                  type: boolean
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Custom field updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/custom-field/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a custom field
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Custom field deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/custom-field/list:
+    post:
+      tags: [CRM]
+      summary: List custom fields for an entity type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                entityType:
+                  type: string
+              required: [businessId, entityType]
+      responses:
+        '200':
+          description: Custom field list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/custom-field/set-value:
+    post:
+      tags: [CRM]
+      summary: Set value for a custom field on an entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fieldId:
+                  type: string
+                entityId:
+                  type: string
+                value:
+                  type: string
+              required: [fieldId, entityId, value]
+      responses:
+        '200':
+          description: Custom field value set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/custom-field/get-values:
+    post:
+      tags: [CRM]
+      summary: Get custom field values for an entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityId:
+                  type: string
+                entityType:
+                  type: string
+              required: [entityId, entityType]
+      responses:
+        '200':
+          description: Custom field values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Dashboard ─────────────────────────────────────────────────────────
+
+  /api/crm/dashboard/summary:
+    post:
+      tags: [CRM]
+      summary: Get CRM dashboard summary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/dashboard/metrics:
+    post:
+      tags: [CRM]
+      summary: Get CRM dashboard metrics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                period:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Dashboard metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/dashboard/recent-activities:
+    post:
+      tags: [CRM]
+      summary: Get recent CRM activities for dashboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Recent activities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/dashboard/top-deals:
+    post:
+      tags: [CRM]
+      summary: Get top deals for dashboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Top deals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/dashboard/pipeline-health:
+    post:
+      tags: [CRM]
+      summary: Get pipeline health for dashboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Pipeline health
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/dashboard/lead-sources:
+    post:
+      tags: [CRM]
+      summary: Get lead source breakdown for dashboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Lead source breakdown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/dashboard/upcoming-tasks:
+    post:
+      tags: [CRM]
+      summary: Get upcoming CRM tasks for dashboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Upcoming tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/dashboard/team-performance:
+    post:
+      tags: [CRM]
+      summary: Get team performance for dashboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Team performance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Deals ─────────────────────────────────────────────────────────────
+
+  /api/crm/deal/create:
+    post:
+      tags: [CRM]
+      summary: Create a CRM deal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                title:
+                  type: string
+                pipelineId:
+                  type: string
+                stageId:
+                  type: string
+                value:
+                  type: number
+                  format: double
+                  nullable: true
+                currency:
+                  type: string
+                  nullable: true
+                expectedCloseDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                leadId:
+                  type: string
+                  nullable: true
+                contactId:
+                  type: string
+                  nullable: true
+                companyId:
+                  type: string
+                  nullable: true
+              required: [businessId, title, pipelineId, stageId]
+      responses:
+        '200':
+          description: Deal created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/deal/update:
+    post:
+      tags: [CRM]
+      summary: Update a CRM deal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                stageId:
+                  type: string
+                  nullable: true
+                value:
+                  type: number
+                  format: double
+                  nullable: true
+                expectedCloseDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Deal updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/deal/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a CRM deal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Deal deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/deal/get:
+    post:
+      tags: [CRM]
+      summary: Get a CRM deal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Deal details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/deal/list:
+    post:
+      tags: [CRM]
+      summary: List CRM deals
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                pipelineId:
+                  type: string
+                  nullable: true
+                stageId:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Deal list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/deal/move-stage:
+    post:
+      tags: [CRM]
+      summary: Move a deal to a different stage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                stageId:
+                  type: string
+              required: [id, stageId]
+      responses:
+        '200':
+          description: Deal stage updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/deal/won:
+    post:
+      tags: [CRM]
+      summary: Mark a deal as won
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Deal marked won
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/deal/lost:
+    post:
+      tags: [CRM]
+      summary: Mark a deal as lost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                reason:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Deal marked lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/deal/reopen:
+    post:
+      tags: [CRM]
+      summary: Reopen a closed deal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Deal reopened
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Email Sequences ───────────────────────────────────────────────────
+
+  /api/crm/email-sequence/create:
+    post:
+      tags: [CRM]
+      summary: Create an email sequence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Email sequence created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/update:
+    post:
+      tags: [CRM]
+      summary: Update an email sequence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Email sequence updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/delete:
+    post:
+      tags: [CRM]
+      summary: Delete an email sequence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Email sequence deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/get:
+    post:
+      tags: [CRM]
+      summary: Get an email sequence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Email sequence details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/list:
+    post:
+      tags: [CRM]
+      summary: List email sequences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Email sequence list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/add-step:
+    post:
+      tags: [CRM]
+      summary: Add a step to an email sequence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sequenceId:
+                  type: string
+                templateId:
+                  type: string
+                delayDays:
+                  type: integer
+              required: [sequenceId, templateId, delayDays]
+      responses:
+        '200':
+          description: Step added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/remove-step:
+    post:
+      tags: [CRM]
+      summary: Remove a step from an email sequence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sequenceId:
+                  type: string
+                stepId:
+                  type: string
+              required: [sequenceId, stepId]
+      responses:
+        '200':
+          description: Step removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/enroll:
+    post:
+      tags: [CRM]
+      summary: Enroll a lead in an email sequence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sequenceId:
+                  type: string
+                leadId:
+                  type: string
+              required: [sequenceId, leadId]
+      responses:
+        '200':
+          description: Lead enrolled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/unenroll:
+    post:
+      tags: [CRM]
+      summary: Unenroll a lead from an email sequence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sequenceId:
+                  type: string
+                leadId:
+                  type: string
+              required: [sequenceId, leadId]
+      responses:
+        '200':
+          description: Lead unenrolled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/pause:
+    post:
+      tags: [CRM]
+      summary: Pause an email sequence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Email sequence paused
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/resume:
+    post:
+      tags: [CRM]
+      summary: Resume an email sequence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Email sequence resumed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-sequence/stats:
+    post:
+      tags: [CRM]
+      summary: Get email sequence stats
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Email sequence stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Email Templates ───────────────────────────────────────────────────
+
+  /api/crm/email-template/create:
+    post:
+      tags: [CRM]
+      summary: Create a CRM email template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                subject:
+                  type: string
+                body:
+                  type: string
+              required: [businessId, name, subject, body]
+      responses:
+        '200':
+          description: Email template created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-template/update:
+    post:
+      tags: [CRM]
+      summary: Update a CRM email template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                subject:
+                  type: string
+                  nullable: true
+                body:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Email template updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-template/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a CRM email template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Email template deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-template/get:
+    post:
+      tags: [CRM]
+      summary: Get a CRM email template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Email template details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-template/list:
+    post:
+      tags: [CRM]
+      summary: List CRM email templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Email template list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/email-template/preview:
+    post:
+      tags: [CRM]
+      summary: Preview a CRM email template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                variables:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Rendered template preview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Import / Export ───────────────────────────────────────────────────
+
+  /api/crm/import/leads:
+    post:
+      tags: [CRM]
+      summary: Import leads from CSV/JSON
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                data:
+                  type: array
+                  items:
+                    type: object
+              required: [businessId, data]
+      responses:
+        '200':
+          description: Leads imported
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/import/contacts:
+    post:
+      tags: [CRM]
+      summary: Import CRM contacts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                data:
+                  type: array
+                  items:
+                    type: object
+              required: [businessId, data]
+      responses:
+        '200':
+          description: Contacts imported
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/import/companies:
+    post:
+      tags: [CRM]
+      summary: Import CRM companies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                data:
+                  type: array
+                  items:
+                    type: object
+              required: [businessId, data]
+      responses:
+        '200':
+          description: Companies imported
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/import/deals:
+    post:
+      tags: [CRM]
+      summary: Import CRM deals
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                data:
+                  type: array
+                  items:
+                    type: object
+              required: [businessId, data]
+      responses:
+        '200':
+          description: Deals imported
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/import/status:
+    post:
+      tags: [CRM]
+      summary: Check import job status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Import status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/export/leads:
+    post:
+      tags: [CRM]
+      summary: Export leads to CSV/JSON
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                format:
+                  type: string
+                  example: CSV
+              required: [businessId]
+      responses:
+        '200':
+          description: Lead export URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/export/contacts:
+    post:
+      tags: [CRM]
+      summary: Export CRM contacts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                format:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Contact export URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/export/deals:
+    post:
+      tags: [CRM]
+      summary: Export CRM deals
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                format:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Deal export URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/export/activities:
+    post:
+      tags: [CRM]
+      summary: Export CRM activities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                format:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Activity export URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/export/template:
+    post:
+      tags: [CRM]
+      summary: Download import template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityType:
+                  type: string
+                  example: LEAD
+              required: [entityType]
+      responses:
+        '200':
+          description: Template download URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Leads ─────────────────────────────────────────────────────────────
+
+  /api/crm/lead/create:
+    post:
+      tags: [CRM]
+      summary: Create a CRM lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                source:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+                companyId:
+                  type: string
+                  nullable: true
+                value:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Lead created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/lead/update:
+    post:
+      tags: [CRM]
+      summary: Update a CRM lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  nullable: true
+                value:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Lead updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/lead/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a CRM lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Lead deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/lead/get:
+    post:
+      tags: [CRM]
+      summary: Get a CRM lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Lead details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/lead/list:
+    post:
+      tags: [CRM]
+      summary: List CRM leads
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                status:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Lead list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/lead/convert:
+    post:
+      tags: [CRM]
+      summary: Convert a lead to a deal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                pipelineId:
+                  type: string
+                stageId:
+                  type: string
+              required: [id, pipelineId, stageId]
+      responses:
+        '200':
+          description: Lead converted to deal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/lead/assign:
+    post:
+      tags: [CRM]
+      summary: Assign a lead to a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                userId:
+                  type: string
+              required: [id, userId]
+      responses:
+        '200':
+          description: Lead assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/lead/qualify:
+    post:
+      tags: [CRM]
+      summary: Mark a lead as qualified
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Lead qualified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/lead/disqualify:
+    post:
+      tags: [CRM]
+      summary: Disqualify a lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                reason:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Lead disqualified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/lead/score:
+    post:
+      tags: [CRM]
+      summary: Get or update lead score
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Lead score
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Pipelines ─────────────────────────────────────────────────────────
+
+  /api/crm/pipeline/create:
+    post:
+      tags: [CRM]
+      summary: Create a CRM pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                stages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      order:
+                        type: integer
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Pipeline created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/pipeline/update:
+    post:
+      tags: [CRM]
+      summary: Update a CRM pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Pipeline updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/pipeline/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a CRM pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Pipeline deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/pipeline/get:
+    post:
+      tags: [CRM]
+      summary: Get a CRM pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Pipeline details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/pipeline/list:
+    post:
+      tags: [CRM]
+      summary: List CRM pipelines
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Pipeline list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/pipeline/add-stage:
+    post:
+      tags: [CRM]
+      summary: Add a stage to a pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pipelineId:
+                  type: string
+                name:
+                  type: string
+                order:
+                  type: integer
+              required: [pipelineId, name, order]
+      responses:
+        '200':
+          description: Stage added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/pipeline/remove-stage:
+    post:
+      tags: [CRM]
+      summary: Remove a stage from a pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pipelineId:
+                  type: string
+                stageId:
+                  type: string
+              required: [pipelineId, stageId]
+      responses:
+        '200':
+          description: Stage removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/pipeline/reorder-stages:
+    post:
+      tags: [CRM]
+      summary: Reorder stages in a pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pipelineId:
+                  type: string
+                stageIds:
+                  type: array
+                  items:
+                    type: string
+              required: [pipelineId, stageIds]
+      responses:
+        '200':
+          description: Stages reordered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/pipeline/default:
+    post:
+      tags: [CRM]
+      summary: Set default pipeline for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                pipelineId:
+                  type: string
+              required: [businessId, pipelineId]
+      responses:
+        '200':
+          description: Default pipeline set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Search ────────────────────────────────────────────────────────────
+
+  /api/crm/search:
+    get:
+      tags: [CRM]
+      summary: Search across CRM entities
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: entityType
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Tags ──────────────────────────────────────────────────────────────
+
+  /api/crm/tag/create:
+    post:
+      tags: [CRM]
+      summary: Create a CRM tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                color:
+                  type: string
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Tag created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/tag/update:
+    post:
+      tags: [CRM]
+      summary: Update a CRM tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                color:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Tag updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/tag/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a CRM tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Tag deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/tag/list:
+    post:
+      tags: [CRM]
+      summary: List CRM tags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Tag list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/tag/assign:
+    post:
+      tags: [CRM]
+      summary: Assign tags to a CRM entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityId:
+                  type: string
+                entityType:
+                  type: string
+                tagIds:
+                  type: array
+                  items:
+                    type: string
+              required: [entityId, entityType, tagIds]
+      responses:
+        '200':
+          description: Tags assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/tag/remove:
+    post:
+      tags: [CRM]
+      summary: Remove tags from a CRM entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityId:
+                  type: string
+                entityType:
+                  type: string
+                tagIds:
+                  type: array
+                  items:
+                    type: string
+              required: [entityId, entityType, tagIds]
+      responses:
+        '200':
+          description: Tags removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/tag/get-entity-tags:
+    post:
+      tags: [CRM]
+      summary: Get tags for a CRM entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityId:
+                  type: string
+                entityType:
+                  type: string
+              required: [entityId, entityType]
+      responses:
+        '200':
+          description: Entity tags
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/tag/get-tagged-entities:
+    post:
+      tags: [CRM]
+      summary: Get entities with a specific tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tagId:
+                  type: string
+              required: [tagId]
+      responses:
+        '200':
+          description: Tagged entities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Tasks ─────────────────────────────────────────────────────────────
+
+  /api/crm/task/create:
+    post:
+      tags: [CRM]
+      summary: Create a CRM task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                title:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                dueDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                priority:
+                  type: string
+                  nullable: true
+                assigneeId:
+                  type: string
+                  nullable: true
+                leadId:
+                  type: string
+                  nullable: true
+                dealId:
+                  type: string
+                  nullable: true
+              required: [businessId, title]
+      responses:
+        '200':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/task/update:
+    post:
+      tags: [CRM]
+      summary: Update a CRM task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                dueDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                priority:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/task/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a CRM task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Task deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/task/get:
+    post:
+      tags: [CRM]
+      summary: Get a CRM task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/task/list:
+    post:
+      tags: [CRM]
+      summary: List CRM tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                assigneeId:
+                  type: string
+                  nullable: true
+                leadId:
+                  type: string
+                  nullable: true
+                dealId:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Task list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/task/complete:
+    post:
+      tags: [CRM]
+      summary: Mark a CRM task as complete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Task completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/task/assign:
+    post:
+      tags: [CRM]
+      summary: Assign a CRM task to a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                assigneeId:
+                  type: string
+              required: [id, assigneeId]
+      responses:
+        '200':
+          description: Task assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/task/overdue:
+    post:
+      tags: [CRM]
+      summary: List overdue CRM tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Overdue tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/task/upcoming:
+    post:
+      tags: [CRM]
+      summary: List upcoming CRM tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Upcoming tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/task/by-priority:
+    post:
+      tags: [CRM]
+      summary: List CRM tasks by priority
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                priority:
+                  type: string
+              required: [businessId, priority]
+      responses:
+        '200':
+          description: Tasks by priority
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Web Forms ─────────────────────────────────────────────────────────
+
+  /api/crm/web-form/create:
+    post:
+      tags: [CRM]
+      summary: Create a CRM web form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                fields:
+                  type: array
+                  items:
+                    type: object
+                pipelineId:
+                  type: string
+                  nullable: true
+              required: [businessId, name, fields]
+      responses:
+        '200':
+          description: Web form created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/web-form/update:
+    post:
+      tags: [CRM]
+      summary: Update a CRM web form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                fields:
+                  type: array
+                  items:
+                    type: object
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Web form updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/web-form/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a CRM web form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Web form deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/web-form/get:
+    post:
+      tags: [CRM]
+      summary: Get a CRM web form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Web form details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/web-form/list:
+    post:
+      tags: [CRM]
+      summary: List CRM web forms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Web form list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/web-form/submissions:
+    post:
+      tags: [CRM]
+      summary: List web form submissions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                formId:
+                  type: string
+              required: [formId]
+      responses:
+        '200':
+          description: Form submissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/web-form/embed-code:
+    post:
+      tags: [CRM]
+      summary: Get embed code for a web form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Embed code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/web-form/submit:
+    post:
+      tags: [CRM]
+      summary: Submit a web form (public)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                formId:
+                  type: string
+                data:
+                  type: object
+                  additionalProperties: true
+              required: [formId, data]
+      responses:
+        '200':
+          description: Form submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── CRM Workflows ─────────────────────────────────────────────────────────
+
+  /api/crm/workflow/create:
+    post:
+      tags: [CRM]
+      summary: Create a CRM workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                trigger:
+                  type: string
+                  example: LEAD_CREATED
+                actions:
+                  type: array
+                  items:
+                    type: object
+              required: [businessId, name, trigger, actions]
+      responses:
+        '200':
+          description: Workflow created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/workflow/update:
+    post:
+      tags: [CRM]
+      summary: Update a CRM workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                actions:
+                  type: array
+                  items:
+                    type: object
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Workflow updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/workflow/delete:
+    post:
+      tags: [CRM]
+      summary: Delete a CRM workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Workflow deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/workflow/get:
+    post:
+      tags: [CRM]
+      summary: Get a CRM workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Workflow details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/workflow/list:
+    post:
+      tags: [CRM]
+      summary: List CRM workflows
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Workflow list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/workflow/enable:
+    post:
+      tags: [CRM]
+      summary: Enable a CRM workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Workflow enabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/workflow/disable:
+    post:
+      tags: [CRM]
+      summary: Disable a CRM workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Workflow disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/workflow/run-history:
+    post:
+      tags: [CRM]
+      summary: Get CRM workflow run history
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Workflow run history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/crm/workflow/test:
+    post:
+      tags: [CRM]
+      summary: Test a CRM workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                testData:
+                  type: object
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Workflow test result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

@@ -1,0 +1,847 @@
+paths:
+  # ── Support Tickets ───────────────────────────────────────────────────────
+
+  /api/support/tickets/create:
+    post:
+      tags: [Support]
+      summary: Create a support ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                subject:
+                  type: string
+                description:
+                  type: string
+                priority:
+                  type: string
+                  nullable: true
+                  example: HIGH
+                customerId:
+                  type: string
+                  nullable: true
+                category:
+                  type: string
+                  nullable: true
+              required: [businessId, subject, description]
+      responses:
+        '200':
+          description: Ticket created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/list:
+    post:
+      tags: [Support]
+      summary: List support tickets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                status:
+                  type: string
+                  nullable: true
+                priority:
+                  type: string
+                  nullable: true
+                assigneeId:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Ticket list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/{id}:
+    get:
+      tags: [Support]
+      summary: Get a support ticket by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ticket details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/{id}/update:
+    post:
+      tags: [Support]
+      summary: Update a support ticket
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                  nullable: true
+                priority:
+                  type: string
+                  nullable: true
+                category:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Ticket updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/{id}/assign:
+    post:
+      tags: [Support]
+      summary: Assign a support ticket to an agent
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assigneeId:
+                  type: string
+              required: [assigneeId]
+      responses:
+        '200':
+          description: Ticket assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/{id}/status:
+    post:
+      tags: [Support]
+      summary: Change support ticket status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: IN_PROGRESS
+              required: [status]
+      responses:
+        '200':
+          description: Status changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/{id}/close:
+    post:
+      tags: [Support]
+      summary: Close a support ticket
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resolution:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Ticket closed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/{id}/reopen:
+    post:
+      tags: [Support]
+      summary: Reopen a closed support ticket
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ticket reopened
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/{id}/delete:
+    post:
+      tags: [Support]
+      summary: Delete a support ticket
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ticket deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/bulk/assign:
+    post:
+      tags: [Support]
+      summary: Bulk assign support tickets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ticketIds:
+                  type: array
+                  items:
+                    type: string
+                assigneeId:
+                  type: string
+              required: [ticketIds, assigneeId]
+      responses:
+        '200':
+          description: Tickets assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/bulk/close:
+    post:
+      tags: [Support]
+      summary: Bulk close support tickets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ticketIds:
+                  type: array
+                  items:
+                    type: string
+              required: [ticketIds]
+      responses:
+        '200':
+          description: Tickets closed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/bulk/tag:
+    post:
+      tags: [Support]
+      summary: Bulk tag support tickets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ticketIds:
+                  type: array
+                  items:
+                    type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+              required: [ticketIds, tags]
+      responses:
+        '200':
+          description: Tickets tagged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/{id}/comments/create:
+    post:
+      tags: [Support]
+      summary: Add a comment to a support ticket
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                isInternal:
+                  type: boolean
+                  nullable: true
+              required: [content]
+      responses:
+        '200':
+          description: Comment added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/{id}/comments:
+    get:
+      tags: [Support]
+      summary: Get comments for a support ticket
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Comment list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/comments/{commentId}/delete:
+    post:
+      tags: [Support]
+      summary: Delete a support ticket comment
+      parameters:
+        - in: path
+          name: commentId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Comment deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/tickets/metrics:
+    get:
+      tags: [Support]
+      summary: Get support ticket metrics
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ticket metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Support Articles ──────────────────────────────────────────────────────
+
+  /api/support/articles/create:
+    post:
+      tags: [Support]
+      summary: Create a support article
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                title:
+                  type: string
+                content:
+                  type: string
+                category:
+                  type: string
+                  nullable: true
+                slug:
+                  type: string
+                  nullable: true
+              required: [businessId, title, content]
+      responses:
+        '200':
+          description: Article created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/articles/list:
+    post:
+      tags: [Support]
+      summary: List support articles (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                category:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Article list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/articles/{id}/update:
+    post:
+      tags: [Support]
+      summary: Update a support article
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  nullable: true
+                content:
+                  type: string
+                  nullable: true
+                category:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Article updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/articles/{id}/publish:
+    post:
+      tags: [Support]
+      summary: Publish a support article
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Article published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/articles/{id}/delete:
+    post:
+      tags: [Support]
+      summary: Delete a support article
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Article deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/support/articles:
+    get:
+      tags: [Support]
+      summary: List published support articles (public)
+      security: []
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: product
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: search
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: Published articles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/support/articles/{slug}:
+    get:
+      tags: [Support]
+      summary: Get a support article by slug (public)
+      security: []
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Article details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/support/articles/{slug}/feedback:
+    post:
+      tags: [Support]
+      summary: Submit feedback on a support article (public)
+      security: []
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                helpful:
+                  type: boolean
+                comment:
+                  type: string
+                  nullable: true
+              required: [helpful]
+      responses:
+        '200':
+          description: Feedback submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Canned Responses ──────────────────────────────────────────────────────
+
+  /api/support/canned/create:
+    post:
+      tags: [Support]
+      summary: Create a canned response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                content:
+                  type: string
+                category:
+                  type: string
+                  nullable: true
+              required: [businessId, name, content]
+      responses:
+        '200':
+          description: Canned response created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/canned/list:
+    post:
+      tags: [Support]
+      summary: List canned responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                category:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Canned response list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/canned/{id}/update:
+    post:
+      tags: [Support]
+      summary: Update a canned response
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: true
+                content:
+                  type: string
+                  nullable: true
+                category:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Canned response updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/support/canned/{id}/delete:
+    post:
+      tags: [Support]
+      summary: Delete a canned response
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Canned response deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Public Support ────────────────────────────────────────────────────────
+
+  /api/public/support/tickets:
+    post:
+      tags: [Support]
+      summary: Create a support ticket anonymously (public)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                subject:
+                  type: string
+                description:
+                  type: string
+                businessId:
+                  type: string
+              required: [name, email, subject, description, businessId]
+      responses:
+        '200':
+          description: Ticket created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/support/tickets/lookup:
+    get:
+      tags: [Support]
+      summary: Look up a support ticket by number and email (public)
+      security: []
+      parameters:
+        - in: query
+          name: ticketNumber
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ticket details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/support/tickets/{ticketNumber}/reply:
+    post:
+      tags: [Support]
+      summary: Reply to a support ticket (public)
+      security: []
+      parameters:
+        - in: path
+          name: ticketNumber
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                content:
+                  type: string
+              required: [email, content]
+      responses:
+        '200':
+          description: Reply sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/public/support/tickets/{ticketNumber}/satisfaction:
+    post:
+      tags: [Support]
+      summary: Submit satisfaction rating for a resolved ticket (public)
+      security: []
+      parameters:
+        - in: path
+          name: ticketNumber
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+                  nullable: true
+              required: [rating]
+      responses:
+        '200':
+          description: Rating submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}

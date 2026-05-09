@@ -1,0 +1,506 @@
+paths:
+  # ── Auth ──────────────────────────────────────────────────────────────────
+
+  /api/auth/CHECK_ACCOUNT:
+    post:
+      tags: [Auth]
+      summary: Check if an account exists
+      description: Checks whether a user account exists for the given mobile number. Rate-limited to 5 attempts per 15 minutes per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthMobileRequest'
+      responses:
+        '200':
+          description: Account check result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '429':
+          description: Too many requests
+
+  /api/auth/AUTHENTICATE:
+    post:
+      tags: [Auth]
+      summary: Authenticate user (OTP-based)
+      description: Authenticates via mobile + OTP. Returns JWT access token and refresh token on success. Rate-limited to 5 attempts per 15 minutes per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthMobileRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '401':
+          description: Authentication failed
+
+  /api/auth/REGISTER:
+    post:
+      tags: [Auth]
+      summary: Register new user
+      description: Creates a new user account with mobile number. Rate-limited to 5 attempts per 15 minutes per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/AuthMobileRequest'
+                - type: object
+                  properties:
+                    name:
+                      type: string
+                      example: John Doe
+                  required: [name]
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+
+  /api/auth/VERIFY_PASSWORD:
+    post:
+      tags: [Auth]
+      summary: Verify password (MPIN / password login)
+      description: Authenticates using mobile + password/MPIN. May return a 2FA challenge if configured.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  example: "9876543210"
+                dialCode:
+                  type: string
+                  example: "+91"
+                password:
+                  type: string
+                  format: password
+              required: [mobile, dialCode, password]
+      responses:
+        '200':
+          description: Authenticated or 2FA challenge issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '401':
+          description: Invalid credentials
+
+  /api/auth/LOGIN_EMAIL:
+    post:
+      tags: [Auth]
+      summary: Login with email and password
+      description: Authenticates using email + password. Rate-limited to 5 attempts per 15 minutes per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginEmailRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '401':
+          description: Invalid credentials
+
+  /api/auth/REFRESH_TOKEN:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      description: Exchanges a valid refresh token for a new JWT access token. Rate-limited to 10 attempts per 15 minutes per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: New tokens issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '401':
+          description: Invalid or expired refresh token
+
+  /api/auth/LOGOUT:
+    post:
+      tags: [Auth]
+      summary: Logout current user
+      description: Invalidates the current session for the authenticated user.
+      responses:
+        '200':
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/auth/RETRIEVE_ALL_LANGUAGE:
+    post:
+      tags: [Auth]
+      summary: List supported languages
+      description: Returns all supported UI languages for the platform.
+      security: []
+      responses:
+        '200':
+          description: Language list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          type: string
+                          example: en
+
+  /api/auth/GET_USER:
+    post:
+      tags: [Auth]
+      summary: Get authenticated user details
+      description: Returns the profile of the currently authenticated user.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: '#/components/schemas/User'
+
+  /api/auth/SET_PASSWORD:
+    post:
+      tags: [Auth]
+      summary: Set or change password
+      description: Sets or updates the user's password/MPIN.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 4
+              required: [password]
+      responses:
+        '200':
+          description: Password updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/auth/UPDATE_FCM_TOKEN:
+    post:
+      tags: [Auth]
+      summary: Update FCM push token
+      description: Registers or updates the Firebase Cloud Messaging device token for push notifications.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fcmToken:
+                  type: string
+                  description: FCM device token
+                deviceId:
+                  type: string
+                  nullable: true
+              required: [fcmToken]
+      responses:
+        '200':
+          description: Token updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/auth/NAVIGATION_CONTEXT:
+    post:
+      tags: [Auth]
+      summary: Get navigation context
+      description: Returns the app navigation context for the authenticated user including role, active businesses, and feature flags.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Navigation context
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: object
+                        description: Navigation context object (structure varies by app)
+
+  /api/auth/ADMIN_ALL:
+    post:
+      tags: [Auth]
+      summary: Admin — list all users
+      description: Admin-only endpoint. Returns a paginated list of all platform users.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  default: 1
+                limit:
+                  type: integer
+                  default: 20
+                search:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: User list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ── OTP ───────────────────────────────────────────────────────────────────
+
+  /api/otp/SEND_OTP:
+    post:
+      tags: [Auth]
+      summary: Send OTP
+      description: |
+        Sends a one-time password to the given mobile number. Rate-limited per IP (5/15 min),
+        per mobile (3/10 min), and per phone-IP pair. Requires `X-App-ID` header.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendOtpRequest'
+      responses:
+        '200':
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: object
+                        properties:
+                          otpId:
+                            type: string
+                            description: Opaque ID used when calling VERIFY_OTP
+        '429':
+          description: Rate limit exceeded
+
+  /api/otp/VERIFY_OTP:
+    post:
+      tags: [Auth]
+      summary: Verify OTP
+      description: Verifies the OTP code against the otpId. On success, resets the IP rate-limit bucket. Requires `X-App-ID` header.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOtpRequest'
+      responses:
+        '200':
+          description: OTP verified
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      payload:
+                        type: object
+                        properties:
+                          verified:
+                            type: boolean
+        '400':
+          description: Invalid or expired OTP
+        '429':
+          description: Rate limit exceeded
+
+components:
+  schemas:
+    AuthMobileRequest:
+      type: object
+      properties:
+        mobile:
+          type: string
+          example: "9876543210"
+        dialCode:
+          type: string
+          example: "+91"
+        name:
+          type: string
+          nullable: true
+          example: John Doe
+      required: [mobile, dialCode]
+
+    LoginEmailRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          minLength: 6
+      required: [email, password]
+
+    RefreshTokenRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required: [refreshToken]
+
+    AuthTokenResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: SUCCESS
+        message:
+          type: string
+          nullable: true
+        payload:
+          type: object
+          nullable: true
+          properties:
+            token:
+              type: string
+              description: JWT access token
+            refreshToken:
+              type: string
+              description: Refresh token for obtaining new access tokens
+            user:
+              $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        mobile:
+          type: string
+          nullable: true
+        dialCode:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        profileImage:
+          type: string
+          nullable: true
+        isVerified:
+          type: boolean
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    SendOtpRequest:
+      type: object
+      properties:
+        mobile:
+          type: string
+          example: "9876543210"
+        dialCode:
+          type: string
+          example: "+91"
+        appId:
+          type: string
+          nullable: true
+          description: Overridden by X-App-ID header
+      required: [mobile, dialCode]
+
+    VerifyOtpRequest:
+      type: object
+      properties:
+        otpId:
+          type: string
+          description: ID returned by SEND_OTP
+        otp:
+          type: string
+          description: The OTP code received by the user
+          maxLength: 8
+      required: [otpId, otp]

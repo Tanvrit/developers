@@ -1,0 +1,2162 @@
+paths:
+  # ── Media Files ───────────────────────────────────────────────────────────
+
+  /api/mediaFile/RETRIEVE:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve media files
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  nullable: true
+                ownerId:
+                  type: string
+                  nullable: true
+                ownerType:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Media file list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/mediaFile/UPLOAD:
+    post:
+      tags: [Media & Social]
+      summary: Upload a media file
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ownerId:
+                  type: string
+                ownerType:
+                  type: string
+                fileName:
+                  type: string
+                contentType:
+                  type: string
+              required: [ownerId, ownerType, fileName, contentType]
+      responses:
+        '200':
+          description: Upload URL returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/mediaFile/CREATE:
+    post:
+      tags: [Media & Social]
+      summary: Create a media file record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ownerId:
+                  type: string
+                ownerType:
+                  type: string
+                url:
+                  type: string
+                fileName:
+                  type: string
+                  nullable: true
+                contentType:
+                  type: string
+                  nullable: true
+              required: [ownerId, ownerType, url]
+      responses:
+        '200':
+          description: Media file created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/mediaFile/DELETE:
+    post:
+      tags: [Media & Social]
+      summary: Delete a media file
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Media file deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/media/presign:
+    post:
+      tags: [Media & Social]
+      summary: Generate a presigned upload URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileName:
+                  type: string
+                contentType:
+                  type: string
+                ownerId:
+                  type: string
+                ownerType:
+                  type: string
+              required: [fileName, contentType, ownerId, ownerType]
+      responses:
+        '200':
+          description: Presigned URL and file ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/media/{fileId}/confirm:
+    post:
+      tags: [Media & Social]
+      summary: Confirm media upload completion
+      parameters:
+        - in: path
+          name: fileId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Upload confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Feed (gathering / social) ─────────────────────────────────────────────
+
+  /api/feed/post:
+    post:
+      tags: [Media & Social]
+      summary: Create a gathering feed post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+                content:
+                  type: string
+                  nullable: true
+                mediaUrls:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Feed post created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/feed/context:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve gathering feed posts by context
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatheringId:
+                  type: string
+              required: [gatheringId]
+      responses:
+        '200':
+          description: Feed posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/feed/react:
+    post:
+      tags: [Media & Social]
+      summary: React to a feed post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+                reaction:
+                  type: string
+                  example: LIKE
+              required: [postId, reaction]
+      responses:
+        '200':
+          description: Reaction recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/feed/comment:
+    post:
+      tags: [Media & Social]
+      summary: Comment on a feed post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+                content:
+                  type: string
+              required: [postId, content]
+      responses:
+        '200':
+          description: Comment added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/feed/comments:
+    post:
+      tags: [Media & Social]
+      summary: Get comments for a feed post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required: [postId]
+      responses:
+        '200':
+          description: Comment list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/feed/pin:
+    post:
+      tags: [Media & Social]
+      summary: Pin a feed post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required: [postId]
+      responses:
+        '200':
+          description: Post pinned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/feed/delete:
+    post:
+      tags: [Media & Social]
+      summary: Delete a feed post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required: [postId]
+      responses:
+        '200':
+          description: Feed post deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Posts ─────────────────────────────────────────────────────────────────
+
+  /api/post/create:
+    post:
+      tags: [Media & Social]
+      summary: Create a post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                authorId:
+                  type: string
+                content:
+                  type: string
+                  nullable: true
+                mediaUrls:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+                visibility:
+                  type: string
+                  nullable: true
+              required: [authorId]
+      responses:
+        '200':
+          description: Post created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/post/update:
+    post:
+      tags: [Media & Social]
+      summary: Update a post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                content:
+                  type: string
+                  nullable: true
+                visibility:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Post updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/post/delete:
+    post:
+      tags: [Media & Social]
+      summary: Delete a post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Post deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/post/{postId}:
+    get:
+      tags: [Media & Social]
+      summary: Get a post by ID
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Post details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/post/list:
+    post:
+      tags: [Media & Social]
+      summary: List posts with pagination
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                authorId:
+                  type: string
+                  nullable: true
+                page:
+                  type: integer
+                  default: 0
+                limit:
+                  type: integer
+                  default: 20
+      responses:
+        '200':
+          description: Post list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/post/like:
+    post:
+      tags: [Media & Social]
+      summary: Like a post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required: [postId]
+      responses:
+        '200':
+          description: Post liked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/post/unlike:
+    post:
+      tags: [Media & Social]
+      summary: Unlike a post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required: [postId]
+      responses:
+        '200':
+          description: Post unliked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Follow ────────────────────────────────────────────────────────────────
+
+  /api/follow/FOLLOW:
+    post:
+      tags: [Media & Social]
+      summary: Follow a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                followerId:
+                  type: string
+                followeeId:
+                  type: string
+              required: [followerId, followeeId]
+      responses:
+        '200':
+          description: Following
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/follow/UNFOLLOW:
+    post:
+      tags: [Media & Social]
+      summary: Unfollow a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                followerId:
+                  type: string
+                followeeId:
+                  type: string
+              required: [followerId, followeeId]
+      responses:
+        '200':
+          description: Unfollowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/follow/GET_FOLLOWERS:
+    post:
+      tags: [Media & Social]
+      summary: Get followers of a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Followers list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/follow/GET_FOLLOWING:
+    post:
+      tags: [Media & Social]
+      summary: Get users a user is following
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Following list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/follow/GET_STATS:
+    post:
+      tags: [Media & Social]
+      summary: Get follow statistics for a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required: [userId]
+      responses:
+        '200':
+          description: Follow stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/follow/IS_FOLLOWING:
+    post:
+      tags: [Media & Social]
+      summary: Check if a user is following another
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                followerId:
+                  type: string
+                followeeId:
+                  type: string
+              required: [followerId, followeeId]
+      responses:
+        '200':
+          description: Following status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Ratings ───────────────────────────────────────────────────────────────
+
+  /api/rating/CREATE_RATING:
+    post:
+      tags: [Media & Social]
+      summary: Create a rating
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityId:
+                  type: string
+                entityType:
+                  type: string
+                userId:
+                  type: string
+                rating:
+                  type: number
+                  format: double
+                  minimum: 1
+                  maximum: 5
+              required: [entityId, entityType, userId, rating]
+      responses:
+        '200':
+          description: Rating created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/rating/UPDATE_RATING:
+    post:
+      tags: [Media & Social]
+      summary: Update a rating
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                rating:
+                  type: number
+                  format: double
+              required: [id, rating]
+      responses:
+        '200':
+          description: Rating updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/rating/RETRIEVE_RATING:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve ratings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityId:
+                  type: string
+                  nullable: true
+                entityType:
+                  type: string
+                  nullable: true
+                userId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Rating list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/rating/DELETE_RATING:
+    post:
+      tags: [Media & Social]
+      summary: Delete a rating
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Rating deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/rating/GET_RATING_SUMMARY:
+    post:
+      tags: [Media & Social]
+      summary: Get rating summary for an entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityId:
+                  type: string
+                entityType:
+                  type: string
+              required: [entityId, entityType]
+      responses:
+        '200':
+          description: Rating summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Product Reviews ───────────────────────────────────────────────────────
+
+  /api/review/CREATE_REVIEW:
+    post:
+      tags: [Media & Social]
+      summary: Create a product review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                userId:
+                  type: string
+                rating:
+                  type: number
+                  format: double
+                title:
+                  type: string
+                  nullable: true
+                body:
+                  type: string
+                  nullable: true
+              required: [productId, userId, rating]
+      responses:
+        '200':
+          description: Review created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/review/UPDATE_REVIEW:
+    post:
+      tags: [Media & Social]
+      summary: Update a product review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                rating:
+                  type: number
+                  format: double
+                  nullable: true
+                title:
+                  type: string
+                  nullable: true
+                body:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Review updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/review/RETRIEVE_REVIEWS:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve product reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                  nullable: true
+                userId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Review list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/review/DELETE_REVIEW:
+    post:
+      tags: [Media & Social]
+      summary: Delete a product review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Review deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/review/GET_REVIEW_SUMMARY:
+    post:
+      tags: [Media & Social]
+      summary: Get review summary for a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+              required: [productId]
+      responses:
+        '200':
+          description: Review summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/review/MODERATE_REVIEW:
+    post:
+      tags: [Media & Social]
+      summary: Moderate a product review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                action:
+                  type: string
+                  example: APPROVE
+                reason:
+                  type: string
+                  nullable: true
+              required: [id, action]
+      responses:
+        '200':
+          description: Review moderated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/review/VOTE_HELPFUL:
+    post:
+      tags: [Media & Social]
+      summary: Vote on review helpfulness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reviewId:
+                  type: string
+                helpful:
+                  type: boolean
+              required: [reviewId, helpful]
+      responses:
+        '200':
+          description: Vote recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Recommendations ───────────────────────────────────────────────────────
+
+  /api/recommendation/GET_FOR_PRODUCT:
+    post:
+      tags: [Media & Social]
+      summary: Get product recommendations for a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                limit:
+                  type: integer
+                  nullable: true
+              required: [productId]
+      responses:
+        '200':
+          description: Product recommendations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/recommendation/GET_FOR_USER:
+    post:
+      tags: [Media & Social]
+      summary: Get product recommendations for a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                limit:
+                  type: integer
+                  nullable: true
+              required: [userId]
+      responses:
+        '200':
+          description: User recommendations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/recommendation/GET_TRENDING:
+    post:
+      tags: [Media & Social]
+      summary: Get trending products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                limit:
+                  type: integer
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Trending products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/recommendation/CREATE_CONFIG:
+    post:
+      tags: [Media & Social]
+      summary: Create recommendation config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                algorithm:
+                  type: string
+                  nullable: true
+              required: [businessId]
+      responses:
+        '200':
+          description: Config created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/recommendation/UPDATE_CONFIG:
+    post:
+      tags: [Media & Social]
+      summary: Update recommendation config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                algorithm:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Config updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/recommendation/RETRIEVE_CONFIG:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve recommendation config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Recommendation config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Referrals ─────────────────────────────────────────────────────────────
+
+  /api/referral/CREATE_PROGRAM:
+    post:
+      tags: [Media & Social]
+      summary: Create a referral program
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                rewardType:
+                  type: string
+                  nullable: true
+                rewardValue:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Referral program created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/referral/UPDATE_PROGRAM:
+    post:
+      tags: [Media & Social]
+      summary: Update a referral program
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                rewardValue:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Referral program updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/referral/RETRIEVE_PROGRAM:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve referral programs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Referral program list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/referral/CREATE_REFERRAL:
+    post:
+      tags: [Media & Social]
+      summary: Create a referral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                programId:
+                  type: string
+                referrerId:
+                  type: string
+              required: [programId, referrerId]
+      responses:
+        '200':
+          description: Referral created with code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/referral/RETRIEVE_REFERRALS:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve referrals
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                referrerId:
+                  type: string
+                  nullable: true
+                programId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Referral list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/referral/APPLY_REFERRAL_CODE:
+    post:
+      tags: [Media & Social]
+      summary: Apply a referral code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                refereeId:
+                  type: string
+              required: [code, refereeId]
+      responses:
+        '200':
+          description: Referral code applied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/referral/COMPLETE_REFERRAL:
+    post:
+      tags: [Media & Social]
+      summary: Complete a referral and issue rewards
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Referral completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/referral/list:
+    get:
+      tags: [Media & Social]
+      summary: List referrals (paginated)
+      parameters:
+        - in: query
+          name: programId
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated referral list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ── Loyalty ───────────────────────────────────────────────────────────────
+
+  /api/v1/loyalty/create_program:
+    post:
+      tags: [Media & Social]
+      summary: Create a loyalty program
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                pointsPerCurrency:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [businessId, name]
+      responses:
+        '200':
+          description: Loyalty program created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/loyalty/retrieve_program:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve loyalty program
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Loyalty program
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/loyalty/update_program:
+    post:
+      tags: [Media & Social]
+      summary: Update a loyalty program
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                pointsPerCurrency:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Loyalty program updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/loyalty/enroll:
+    post:
+      tags: [Media & Social]
+      summary: Enroll a customer in a loyalty program
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                programId:
+                  type: string
+                customerId:
+                  type: string
+              required: [programId, customerId]
+      responses:
+        '200':
+          description: Customer enrolled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/loyalty/earn:
+    post:
+      tags: [Media & Social]
+      summary: Earn loyalty points
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                programId:
+                  type: string
+                customerId:
+                  type: string
+                amount:
+                  type: number
+                  format: double
+                reference:
+                  type: string
+                  nullable: true
+              required: [programId, customerId, amount]
+      responses:
+        '200':
+          description: Points earned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/loyalty/redeem:
+    post:
+      tags: [Media & Social]
+      summary: Redeem loyalty points
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                programId:
+                  type: string
+                customerId:
+                  type: string
+                points:
+                  type: integer
+              required: [programId, customerId, points]
+      responses:
+        '200':
+          description: Points redeemed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/loyalty/balance:
+    post:
+      tags: [Media & Social]
+      summary: Get loyalty points balance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                programId:
+                  type: string
+                customerId:
+                  type: string
+              required: [programId, customerId]
+      responses:
+        '200':
+          description: Points balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/loyalty/history:
+    post:
+      tags: [Media & Social]
+      summary: Get loyalty transaction history
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                programId:
+                  type: string
+                customerId:
+                  type: string
+              required: [programId, customerId]
+      responses:
+        '200':
+          description: Loyalty history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/loyalty/account:
+    post:
+      tags: [Media & Social]
+      summary: Get loyalty account for a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerId:
+                  type: string
+                programId:
+                  type: string
+              required: [customerId, programId]
+      responses:
+        '200':
+          description: Loyalty account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/loyalty/upgrade_tier:
+    post:
+      tags: [Media & Social]
+      summary: Upgrade loyalty tier for a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                programId:
+                  type: string
+                customerId:
+                  type: string
+                tier:
+                  type: string
+              required: [programId, customerId, tier]
+      responses:
+        '200':
+          description: Tier upgraded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Looking ───────────────────────────────────────────────────────────────
+
+  /api/looking/CREATE:
+    post:
+      tags: [Media & Social]
+      summary: Create a looking entry (user looking for something)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                category:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+              required: [userId, category]
+      responses:
+        '200':
+          description: Looking entry created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/looking/RETRIEVE:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve looking entries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  nullable: true
+                category:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Looking entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Digital Products ──────────────────────────────────────────────────────
+
+  /api/v1/digital/create:
+    post:
+      tags: [Media & Social]
+      summary: Create a digital product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                price:
+                  type: number
+                  format: double
+                fileUrl:
+                  type: string
+                  nullable: true
+                contentType:
+                  type: string
+                  nullable: true
+              required: [businessId, name, price]
+      responses:
+        '200':
+          description: Digital product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/digital/retrieve:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve a digital product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Digital product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/digital/retrieve_all:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve all digital products for a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+              required: [businessId]
+      responses:
+        '200':
+          description: Digital product list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/digital/update:
+    post:
+      tags: [Media & Social]
+      summary: Update a digital product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                price:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Digital product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/digital/delete:
+    post:
+      tags: [Media & Social]
+      summary: Delete a digital product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Digital product deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/digital/deliver:
+    post:
+      tags: [Media & Social]
+      summary: Deliver a digital product to a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                customerId:
+                  type: string
+                orderId:
+                  type: string
+                  nullable: true
+              required: [productId, customerId]
+      responses:
+        '200':
+          description: Digital product delivered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/digital/delivery/retrieve:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve a digital delivery record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Delivery details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/digital/delivery/retrieve_all:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve all digital deliveries for a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerId:
+                  type: string
+              required: [customerId]
+      responses:
+        '200':
+          description: Delivery list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/v1/digital/delivery/download:
+    post:
+      tags: [Media & Social]
+      summary: Record a digital product download
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deliveryId:
+                  type: string
+              required: [deliveryId]
+      responses:
+        '200':
+          description: Download URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Subscriptions ─────────────────────────────────────────────────────────
+
+  /api/subscription/plan/CREATE:
+    post:
+      tags: [Media & Social]
+      summary: Create a subscription plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                name:
+                  type: string
+                price:
+                  type: number
+                  format: double
+                interval:
+                  type: string
+                  example: MONTHLY
+                features:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+              required: [businessId, name, price, interval]
+      responses:
+        '200':
+          description: Subscription plan created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/subscription/plan/RETRIEVE:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve subscription plans
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessId:
+                  type: string
+                  nullable: true
+                id:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Subscription plan list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/subscription/plan/UPDATE:
+    post:
+      tags: [Media & Social]
+      summary: Update a subscription plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                  nullable: true
+                price:
+                  type: number
+                  format: double
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Subscription plan updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/subscription/subscription/CREATE:
+    post:
+      tags: [Media & Social]
+      summary: Create a subscription for a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                planId:
+                  type: string
+                customerId:
+                  type: string
+                paymentMethodId:
+                  type: string
+                  nullable: true
+              required: [planId, customerId]
+      responses:
+        '200':
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/subscription/subscription/RETRIEVE:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve subscriptions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerId:
+                  type: string
+                  nullable: true
+                planId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Subscription list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/subscription/subscription/CANCEL:
+    post:
+      tags: [Media & Social]
+      summary: Cancel a subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                reason:
+                  type: string
+                  nullable: true
+              required: [id]
+      responses:
+        '200':
+          description: Subscription cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/subscription/subscription/PAUSE:
+    post:
+      tags: [Media & Social]
+      summary: Pause a subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Subscription paused
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/subscription/subscription/RESUME:
+    post:
+      tags: [Media & Social]
+      summary: Resume a paused subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: Subscription resumed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/subscription/invoice/RETRIEVE:
+    post:
+      tags: [Media & Social]
+      summary: Retrieve subscription invoices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subscriptionId:
+                  type: string
+              required: [subscriptionId]
+      responses:
+        '200':
+          description: Subscription invoices
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  # ── Calls (WebRTC) ────────────────────────────────────────────────────────
+
+  /api/call/ice-servers:
+    get:
+      tags: [Media & Social]
+      summary: Get ICE servers for WebRTC calls
+      responses:
+        '200':
+          description: ICE server configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/call/sessions:
+    post:
+      tags: [Media & Social]
+      summary: Create or get a call session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roomId:
+                  type: string
+                  nullable: true
+                participantId:
+                  type: string
+      responses:
+        '200':
+          description: Call session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/call/sessions/{roomId}:
+    get:
+      tags: [Media & Social]
+      summary: Get call session by room ID
+      parameters:
+        - in: path
+          name: roomId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Call session details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/call/sessions/{sessionId}/tracks:
+    post:
+      tags: [Media & Social]
+      summary: Publish or subscribe to a call track
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: PUBLISH
+                trackId:
+                  type: string
+                  nullable: true
+              required: [type]
+      responses:
+        '200':
+          description: Track published/subscribed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+  /api/call/sessions/{sessionId}/tracks/{trackId}:
+    delete:
+      tags: [Media & Social]
+      summary: Stop a call track
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: trackId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Track stopped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+
+components:
+  schemas: {}
