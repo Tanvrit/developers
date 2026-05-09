@@ -1,0 +1,12 @@
+/openapi.yaml
+  Cache-Control: no-cache
+  Content-Type: application/yaml; charset=utf-8
+
+/openapi/*
+  Cache-Control: no-cache
+  Content-Type: application/yaml; charset=utf-8
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin

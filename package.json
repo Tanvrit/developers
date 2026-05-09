@@ -1,0 +1,10 @@
+{
+  "name": "tanvrit-developers",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "bundle": "python3 scripts/bundle.py",
+    "deploy": "python3 scripts/bundle.py && wrangler pages deploy . --project-name=tanvrit-developers",
+    "dev": "wrangler pages dev . --port=4000"
+  }
+}
