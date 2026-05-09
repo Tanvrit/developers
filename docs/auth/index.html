@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Auth — Tanvrit Developers</title>
+  <link rel="stylesheet" href="/docs/auth/style.css" />
+</head>
+<body>
+  <main class="prose">
+    <p class="breadcrumb"><a href="/">Developers</a> · Auth</p>
+    <h1>Auth on Tanvrit</h1>
+    <p class="subtitle">A complete auth surface — phone OTP, social (Google / Apple / Facebook / GitHub), magic links, passkeys — wrapped in three modes that scale from one-line integration to "Sign in with Tanvrit" cross-tenant SSO.</p>
+
+    <div class="card-grid">
+      <a class="card" href="/docs/auth/oauth-modes.html">
+        <h2>OAuth modes</h2>
+        <p>The three integration shapes (Shared, BYO, Sign in with Tanvrit) and how to pick.</p>
+      </a>
+      <a class="card" href="/docs/auth/sign-in-with-tanvrit.html">
+        <h2>Sign in with Tanvrit</h2>
+        <p>Full OIDC IdP guide — discovery, PKCE, ID-token verification, SDK helper.</p>
+      </a>
+      <a class="card" href="/docs/auth/onboarding.html">
+        <h2>Onboarding checklist</h2>
+        <p>Step-by-step bring-up for a new app on Tanvrit auth.</p>
+      </a>
+      <a class="card" href="/portal.html">
+        <h2>Developer portal →</h2>
+        <p>Register your app, manage OIDC clients, edit provider credentials.</p>
+      </a>
+    </div>
+
+    <h2>Quick reference</h2>
+    <table class="quickref">
+      <tbody>
+        <tr><th>Issuer</th><td><code>https://api.tanvrit.com</code></td></tr>
+        <tr><th>Discovery</th><td><code>/.well-known/openid-configuration</code></td></tr>
+        <tr><th>JWKS</th><td><code>/.well-known/jwks.json</code></td></tr>
+        <tr><th>Authorize</th><td><code>GET /oauth/authorize</code> (PKCE-required, S256)</td></tr>
+        <tr><th>Token</th><td><code>POST /oauth/token</code> (client_secret_post or client_secret_basic)</td></tr>
+        <tr><th>UserInfo</th><td><code>GET /oauth/userinfo</code> (Bearer)</td></tr>
+        <tr><th>Revoke</th><td><code>POST /oauth/revoke</code> (RFC 7009)</td></tr>
+        <tr><th>Login (hosted)</th><td><code>/oauth/login</code> — phone-OTP page for unauthenticated users</td></tr>
+        <tr><th>SDK helper</th><td><code>com.tanvrit:auth:2.0.4</code> → <code>SignInWithTanvrit</code></td></tr>
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>

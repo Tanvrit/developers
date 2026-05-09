@@ -8,8 +8,31 @@
   <meta property="og:title" content="Tanvrit API Reference" />
   <meta property="og:description" content="Interactive API documentation for the Tanvrit platform" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>" />
+  <style>
+    .nav-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: #fff; border-bottom: 1px solid #e5dfd5;
+      padding: 0.75rem 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 0.9rem;
+    }
+    .nav-bar .brand { font-weight: 600; color: #1c1c1c; }
+    .nav-bar .links { display: flex; gap: 1.25rem; }
+    .nav-bar .links a { color: #6b6b6b; text-decoration: none; }
+    .nav-bar .links a:hover { color: #6f4d2a; }
+    body { padding-top: 3rem; }
+  </style>
 </head>
 <body>
+  <nav class="nav-bar">
+    <span class="brand">Tanvrit Developers</span>
+    <div class="links">
+      <a href="/">API ref</a>
+      <a href="/docs/auth/">Auth</a>
+      <a href="/portal.html">Portal</a>
+    </div>
+  </nav>
   <!--
     Scalar API Reference — reads the live OpenAPI spec from api.tanvrit.com.
     When the spec is updated on the server, this page reflects it automatically.
@@ -19,6 +42,7 @@
       (obtain from POST /api/auth/AUTHENTICATE or POST /api/auth/LOGIN_EMAIL)
     - AI Commerce Gateway: click the lock icon → paste your X-API-Key
       (obtain from POST /api/ai/v1/keys/create)
+    - "Sign in with Tanvrit" — see /docs/auth/sign-in-with-tanvrit.html
 
     Required header for all /api/* requests: X-App-ID (your app identifier)
   -->

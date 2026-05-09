@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OAuth modes — Tanvrit Developers</title>
+  <link rel="stylesheet" href="/docs/auth/style.css" />
+</head>
+<body>
+  <main class="prose">
+    <p class="breadcrumb"><a href="/">Developers</a> · <a href="/docs/auth/">Auth</a> · OAuth modes</p>
+    <h1>The three OAuth modes</h1>
+    <p class="subtitle">Pick the mode that matches your branding and trust requirements. You can change later — modes are configured per-app.</p>
+
+    <h2>Mode A — Shared (Tanvrit-managed)</h2>
+    <p>Default for first-party platforms (wedding, swyft, …) and any third party that doesn't care about consent-screen branding. The provider's consent screen reads <em>"Tanvrit"</em>.</p>
+    <ul>
+      <li><strong>OAuth client</strong>: Tanvrit owns and registers a single OAuth app per provider (Google / Apple / Facebook / GitHub).</li>
+      <li><strong>Redirect URI</strong>: <code>https://api.tanvrit.com/api/v1/auth/&lt;provider&gt;/callback</code></li>
+      <li><strong>State</strong>: your <code>appId</code> rides on the OAuth state parameter so the callback knows which tenant you are.</li>
+      <li><strong>Setup</strong>: zero. Your app already works in this mode — every platform on day-one is Mode A.</li>
+    </ul>
+
+    <h2>Mode B — BYO (Bring Your Own)</h2>
+    <p>For tenants who want their own brand on the Google / Apple / Facebook / GitHub consent screen. Most B2B SaaS, white-label deployments, and any partner who's already on these platforms with their own developer account.</p>
+    <ul>
+      <li><strong>OAuth client</strong>: you register your own OAuth app at Google Cloud Console / Apple Developer / Meta / GitHub.</li>
+      <li><strong>Redirect URI</strong>: a URL you own on your domain (e.g. <code>https://wedding.example.com/auth/callback</code>).</li>
+      <li><strong>Credentials</strong>: paste <code>client_id</code>, <code>client_secret</code>, and the <code>redirect_uri</code>(s) into the <a href="/portal.html">developer portal</a>. Stored AES-256-GCM-encrypted at rest.</li>
+      <li><strong>Native flow</strong>: your SDK calls Google's native sign-in with <em>your</em> <code>client_id</code>; consent shows <em>your</em> brand. The resulting idToken is forwarded to <code>POST /api/v1/auth/google</code> on Tanvrit; the server verifies the audience matches <em>your</em> stored <code>client_id</code>, then mints a Tanvrit session scoped to your <code>appId</code>.</li>
+      <li><strong>Redirect flow</strong> (web apps): the SDK redirects the user to Google with your <code>client_id</code> + <code>redirect_uri</code>; Google redirects back to your URL with <code>code</code>; your app forwards <code>code</code> to <code>POST /api/v1/auth/google</code> with <code>redirect_uri</code> in the body; the server uses your stored <code>client_secret</code> to complete the exchange.</li>
+    </ul>
+
+    <h2>Mode C — Sign in with Tanvrit (OIDC IdP)</h2>
+    <p>For third parties who want zero-setup auth and cross-Tanvrit SSO. Tanvrit becomes <em>your</em> Identity Provider — your users see Tanvrit's login screen, but the resulting identity is yours to consume via standard OIDC.</p>
+    <ul>
+      <li><strong>OAuth client</strong>: register your relying party in the Tanvrit <a href="/portal.html">developer portal</a>. You'll be issued a <code>client_id</code> and (for confidential clients) a <code>client_secret</code>.</li>
+      <li><strong>Redirect URI</strong>: a URL you own. Listed on your client config — exact-match allowlist enforced at every authorize request.</li>
+      <li><strong>Discovery</strong>: <code>https://api.tanvrit.com/.well-known/openid-configuration</code> — drop into any OIDC library (passport-openidconnect, oauth4webapi, our <a href="/docs/auth/sign-in-with-tanvrit.html">SignInWithTanvrit helper</a>, …).</li>
+      <li><strong>Login UX</strong>: if your user isn't yet authenticated to Tanvrit, they're sent to <code>/oauth/login</code> for a phone-OTP login, then bounced back to <code>/oauth/authorize</code> with their session cookie.</li>
+      <li><strong>SSO</strong>: a user already signed in to one Tanvrit-using app gets one-click consent for any other Tanvrit-using app.</li>
+    </ul>
+
+    <h2>How to choose</h2>
+    <table>
+      <thead><tr><th></th><th>Mode A</th><th>Mode B</th><th>Mode C</th></tr></thead>
+      <tbody>
+        <tr><th>Who runs the OAuth client?</th><td>Tanvrit</td><td>You</td><td>You (against Tanvrit IdP)</td></tr>
+        <tr><th>Who's on the consent screen?</th><td>Tanvrit</td><td>You</td><td>Tanvrit (you authorize from your own UI)</td></tr>
+        <tr><th>Setup work</th><td>None</td><td>Per-provider OAuth registration + paste creds</td><td>Register one OIDC client</td></tr>
+        <tr><th>Cross-Tanvrit SSO</th><td>—</td><td>—</td><td>✓</td></tr>
+        <tr><th>Best for</th><td>First-party apps, dev / staging</td><td>White-label, branded SaaS</td><td>Third-party apps, partners</td></tr>
+      </tbody>
+    </table>
+
+    <p class="next">Next: <a href="/docs/auth/sign-in-with-tanvrit.html">Sign in with Tanvrit (Mode C) — full guide</a></p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Onboarding checklist — Tanvrit Developers</title>
+  <link rel="stylesheet" href="/docs/auth/style.css" />
+</head>
+<body>
+  <main class="prose">
+    <p class="breadcrumb"><a href="/">Developers</a> · <a href="/docs/auth/">Auth</a> · Onboarding</p>
+    <h1>Onboarding checklist</h1>
+    <p class="subtitle">Step-by-step bring-up for a new app on Tanvrit auth. Allow ~30 minutes the first time, ~5 minutes thereafter.</p>
+
+    <ol class="checklist">
+      <li>
+        <h3>Pick your auth mode</h3>
+        <p>Read the <a href="/docs/auth/oauth-modes.html">three modes</a>. Most teams start with Mode A (no setup) and graduate to Mode B or C when they care about consent-screen branding or third-party SSO.</p>
+      </li>
+
+      <li>
+        <h3>Register your app</h3>
+        <p>Open the <a href="/portal.html">developer portal</a> and create a row in <code>PlatformProfile</code>:</p>
+        <ul>
+          <li><code>appId</code> — reverse-DNS string (e.g. <code>com.example.demo</code>). Used as the <code>X-App-ID</code> header on every request and as the OIDC <code>client_id</code> for Mode C.</li>
+          <li><code>label</code> — human-readable display name.</li>
+          <li><code>oauthMode</code> — <code>"shared"</code> (Mode A) or <code>"byo"</code> (Mode B). Mode C is configured separately as an OIDC client.</li>
+          <li><code>branding</code> — logo, primary color, terms / privacy URLs (used by hosted login and consent screens).</li>
+        </ul>
+      </li>
+
+      <li>
+        <h3>(Mode B only) Register OAuth apps with each provider</h3>
+        <p>Go to Google Cloud Console / Apple Developer / Meta / GitHub and register an OAuth app. For each provider:</p>
+        <ul>
+          <li>Set the redirect URI to a URL on <em>your</em> domain.</li>
+          <li>Copy the <code>client_id</code> and <code>client_secret</code> back to the developer portal under <em>Provider credentials</em>.</li>
+        </ul>
+        <p>Tanvrit encrypts the secrets at rest with AES-256-GCM; they're never echoed back via any API.</p>
+      </li>
+
+      <li>
+        <h3>(Mode C only) Register your relying party</h3>
+        <p>In the developer portal under <em>OIDC clients</em>, create a row with:</p>
+        <ul>
+          <li><code>client_id</code> — your relying party identifier.</li>
+          <li><code>client_secret</code> — only for confidential clients.</li>
+          <li><code>redirect_uris</code> — every URL you'll redirect users back to (exact-match allowlist enforced).</li>
+        </ul>
+      </li>
+
+      <li>
+        <h3>Wire the SDK in your app</h3>
+        <p>Add the Tanvrit auth SDK to your Gradle build:</p>
+        <pre><code>// Gradle
+implementation("com.tanvrit:auth:2.0.4")
+implementation("com.tanvrit:auth-ui:2.0.4")  // optional, for TanvritAuthScreen</code></pre>
+        <p>Initialize the SDK at app start with your <code>appId</code>:</p>
+        <pre><code>TanvritSDK.init {
+    appId = "com.example.demo"
+    apiKey = BuildConfig.TANVRIT_API_KEY  // from the developer portal
+    brandSeedColor = 0xFF6F4D2AUL          // your brand color
+}</code></pre>
+      </li>
+
+      <li>
+        <h3>Implement the auth flow</h3>
+        <ul>
+          <li>Mode A / B: drop in <code>TanvritAuthScreen</code> from <code>auth-ui</code>; it handles all 10 providers.</li>
+          <li>Mode C: use the <a href="/docs/auth/sign-in-with-tanvrit.html">SignInWithTanvrit</a> helper or any standard OIDC library.</li>
+        </ul>
+      </li>
+
+      <li>
+        <h3>Verify end-to-end</h3>
+        <ul>
+          <li>Sign in. Confirm the consent screen brand matches what you expect for your mode.</li>
+          <li>Confirm the resulting JWT contains <code>appId</code> matching your registered <code>appId</code>.</li>
+          <li>Hit a protected API (e.g. <code>GET /api/v1/auth/me</code>) and confirm the response is for the right user.</li>
+        </ul>
+      </li>
+
+      <li>
+        <h3>Monitor</h3>
+        <p>Every auth event lands in <code>auth_audit_log</code> (90-day TTL). Surface a "recent auth events" view in your admin dashboard or check from the developer portal.</p>
+      </li>
+    </ol>
+
+    <p class="next">Need help? Email <a href="mailto:developers@tanvrit.com">developers@tanvrit.com</a> or open an issue at <a href="https://github.com/Tanvrit/server/issues">github.com/Tanvrit/server</a>.</p>
+  </main>
+</body>
+</html>

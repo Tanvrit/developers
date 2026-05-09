@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Developer portal — Tanvrit</title>
+  <link rel="stylesheet" href="/docs/auth/style.css" />
+  <style>
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .topbar h1 { margin: 0; font-size: 1.1rem; }
+    .topbar .right { display: flex; gap: 1rem; align-items: center; font-size: 0.9rem; }
+    .topbar a { color: var(--muted); }
+    .topbar button {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--fg);
+    }
+    .topbar button:hover { border-color: var(--accent); color: var(--accent); }
+
+    .container { max-width: 920px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+    .panel h2 { margin: 0 0 1rem; font-size: 1.2rem; }
+    .panel .row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .panel .row > * { flex: 1; min-width: 0; }
+    .panel input, .panel textarea, .panel select {
+      width: 100%;
+      padding: 0.6rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .panel textarea { font-family: ui-monospace, monospace; min-height: 5rem; }
+    .panel label { display: block; font-size: 0.85rem; font-weight: 500; margin: 0.75rem 0 0.25rem; color: var(--muted); }
+    .panel label:first-child { margin-top: 0; }
+    .panel button.primary {
+      margin-top: 1rem;
+      padding: 0.6rem 1.5rem;
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .panel button.primary:hover { background: var(--accent-hover); }
+    .empty {
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .platform-list { list-style: none; padding: 0; margin: 0; }
+    .platform-list li {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .platform-list li:last-child { border-bottom: 0; }
+    .platform-list .meta { display: flex; flex-direction: column; gap: 0.25rem; }
+    .platform-list .id { font-family: ui-monospace, monospace; font-size: 0.85rem; color: var(--muted); }
+    .platform-list .label { font-weight: 500; }
+    .platform-list .mode {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      background: var(--code-bg);
+      color: var(--accent);
+    }
+    .alert {
+      padding: 0.85rem 1rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    .alert.ok { background: #e8f5e9; color: #1b5e20; }
+    .alert.err { background: #fde8e6; color: #b8261c; }
+    .login {
+      max-width: 360px;
+      margin: 4rem auto;
+    }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>Tanvrit developer portal</h1>
+    <div class="right">
+      <a href="/docs/auth/">Docs</a>
+      <a href="/">API ref</a>
+      <span id="who" class="muted" hidden></span>
+      <button id="logout" hidden>Sign out</button>
+    </div>
+  </div>
+
+  <main class="container">
+    <!-- ── Login ────────────────────────────────────────────────── -->
+    <section id="login" class="login">
+      <div class="panel">
+        <h2>Sign in</h2>
+        <p class="muted" style="margin: 0 0 1rem; font-size: 0.9rem;">Use your Tanvrit admin credentials. Password-based for now; OTP-based step-up coming.</p>
+        <div id="loginAlert"></div>
+        <label>Email
+          <input id="loginEmail" type="email" autocomplete="email" autofocus />
+        </label>
+        <label>Password
+          <input id="loginPwd" type="password" autocomplete="current-password" />
+        </label>
+        <label>App ID
+          <input id="loginAppId" placeholder="com.tanvrit.developers" value="com.tanvrit.developers" />
+        </label>
+        <button class="primary" id="loginBtn">Sign in</button>
+      </div>
+    </section>
+
+    <!-- ── Authenticated UI ─────────────────────────────────────── -->
+    <section id="app" hidden>
+      <div class="panel">
+        <h2>Apps</h2>
+        <p class="muted" style="margin: 0 0 1rem; font-size: 0.9rem;">Every row is a registered <code>PlatformProfile</code> — your app's identity, branding, feature flags, and OAuth mode.</p>
+        <div id="platformsAlert"></div>
+        <ul id="platforms" class="platform-list"></ul>
+        <div id="platformsEmpty" class="empty" hidden>No apps yet. Register your first below.</div>
+      </div>
+
+      <div class="panel">
+        <h2>Register a new app</h2>
+        <div class="row">
+          <div>
+            <label>App ID
+              <input id="newAppId" placeholder="com.example.demo" />
+            </label>
+          </div>
+          <div>
+            <label>Display name
+              <input id="newLabel" placeholder="Demo App" />
+            </label>
+          </div>
+        </div>
+        <label>OAuth mode
+          <select id="newMode">
+            <option value="shared">Shared — Tanvrit-managed OAuth (default)</option>
+            <option value="byo">BYO — your own OAuth clients</option>
+          </select>
+        </label>
+        <button class="primary" id="createBtn">Create</button>
+        <div id="createAlert"></div>
+      </div>
+
+      <div class="panel">
+        <h2>OIDC client (Sign in with Tanvrit)</h2>
+        <p class="muted" style="margin: 0 0 1rem; font-size: 0.9rem;">Configure this app as an OIDC relying party. The <code>client_id</code> equals the App ID; <code>client_secret</code> is optional (public clients use PKCE alone).</p>
+        <label>Target App ID
+          <input id="oidcAppId" placeholder="com.example.demo" />
+        </label>
+        <label>Client secret (optional, leave blank for public clients)
+          <input id="oidcSecret" type="password" autocomplete="off" placeholder="leave blank for PKCE-only public client" />
+        </label>
+        <label>Redirect URIs (one per line, exact-match allowlist)
+          <textarea id="oidcRedirects" placeholder="https://app.example.com/auth/callback&#10;https://app.example.com/oauth2/callback"></textarea>
+        </label>
+        <button class="primary" id="oidcSaveBtn">Save OIDC client</button>
+        <div id="oidcAlert"></div>
+      </div>
+    </section>
+  </main>
+
+<script>
+(() => {
+  const API = window.location.origin.replace(/^https?:\/\/(?:developers\.|.*\/)?/, "https://api.") /* heuristic — overridden below */;
+  // Hard default: Tanvrit production API. Override via ?api=… for staging.
+  const apiBase = new URLSearchParams(location.search).get("api") || "https://api.tanvrit.com";
+
+  const els = {
+    login: document.getElementById("login"),
+    app: document.getElementById("app"),
+    who: document.getElementById("who"),
+    logout: document.getElementById("logout"),
+    loginEmail: document.getElementById("loginEmail"),
+    loginPwd: document.getElementById("loginPwd"),
+    loginAppId: document.getElementById("loginAppId"),
+    loginBtn: document.getElementById("loginBtn"),
+    loginAlert: document.getElementById("loginAlert"),
+    platforms: document.getElementById("platforms"),
+    platformsEmpty: document.getElementById("platformsEmpty"),
+    platformsAlert: document.getElementById("platformsAlert"),
+    newAppId: document.getElementById("newAppId"),
+    newLabel: document.getElementById("newLabel"),
+    newMode: document.getElementById("newMode"),
+    createBtn: document.getElementById("createBtn"),
+    createAlert: document.getElementById("createAlert"),
+    oidcAppId: document.getElementById("oidcAppId"),
+    oidcSecret: document.getElementById("oidcSecret"),
+    oidcRedirects: document.getElementById("oidcRedirects"),
+    oidcSaveBtn: document.getElementById("oidcSaveBtn"),
+    oidcAlert: document.getElementById("oidcAlert"),
+  };
+
+  const state = {
+    token: localStorage.getItem("dev_portal_token") || "",
+    appId: localStorage.getItem("dev_portal_appId") || "com.tanvrit.developers",
+    email: localStorage.getItem("dev_portal_email") || "",
+  };
+
+  function setAlert(node, kind, msg) {
+    node.innerHTML = msg ? `<div class="alert ${kind}">${msg}</div>` : "";
+  }
+
+  function showApp() {
+    els.login.hidden = true;
+    els.app.hidden = false;
+    els.who.hidden = false;
+    els.logout.hidden = false;
+    els.who.textContent = state.email || state.appId;
+    loadPlatforms();
+  }
+
+  function showLogin() {
+    els.login.hidden = false;
+    els.app.hidden = true;
+    els.who.hidden = true;
+    els.logout.hidden = true;
+  }
+
+  async function api(path, opts = {}) {
+    const headers = Object.assign(
+      {
+        "X-App-ID": state.appId,
+        "Content-Type": "application/json",
+      },
+      opts.headers || {},
+    );
+    if (state.token) headers["Authorization"] = "Bearer " + state.token;
+    const r = await fetch(apiBase + path, Object.assign({ method: opts.method || "GET" }, opts, { headers }));
+    if (r.status === 401) {
+      state.token = "";
+      localStorage.removeItem("dev_portal_token");
+      showLogin();
+      throw new Error("Unauthorized");
+    }
+    return r;
+  }
+
+  els.loginBtn.addEventListener("click", async () => {
+    setAlert(els.loginAlert, "", "");
+    const email = els.loginEmail.value.trim();
+    const password = els.loginPwd.value;
+    const appId = els.loginAppId.value.trim() || "com.tanvrit.developers";
+    if (!email || !password) {
+      setAlert(els.loginAlert, "err", "Email and password are required.");
+      return;
+    }
+    state.appId = appId;
+    localStorage.setItem("dev_portal_appId", appId);
+    try {
+      const r = await api("/api/v1/auth/LOGIN_EMAIL", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await r.json();
+      if (!r.ok || !data.payload?.accessToken) {
+        setAlert(els.loginAlert, "err", data.message || "Sign in failed.");
+        return;
+      }
+      state.token = data.payload.accessToken;
+      state.email = email;
+      localStorage.setItem("dev_portal_token", state.token);
+      localStorage.setItem("dev_portal_email", email);
+      showApp();
+    } catch (e) {
+      setAlert(els.loginAlert, "err", e.message || "Sign in failed.");
+    }
+  });
+
+  els.logout.addEventListener("click", () => {
+    state.token = "";
+    state.email = "";
+    localStorage.removeItem("dev_portal_token");
+    localStorage.removeItem("dev_portal_email");
+    showLogin();
+  });
+
+  async function loadPlatforms() {
+    setAlert(els.platformsAlert, "", "");
+    els.platforms.innerHTML = "";
+    els.platformsEmpty.hidden = true;
+    try {
+      const r = await api("/api/platforms/profile");
+      const data = await r.json();
+      const list = data.payload || [];
+      if (list.length === 0) {
+        els.platformsEmpty.hidden = false;
+        return;
+      }
+      for (const p of list) {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <div class="meta">
+            <span class="label">${escapeHtml(p.label || "(unnamed)")}</span>
+            <span class="id">${escapeHtml(p.appId)}</span>
+          </div>
+          <span class="mode">${escapeHtml(p.oauthMode || "shared")}</span>
+        `;
+        els.platforms.appendChild(li);
+      }
+    } catch (e) {
+      setAlert(els.platformsAlert, "err", "Couldn't load platforms: " + (e.message || e));
+    }
+  }
+
+  els.createBtn.addEventListener("click", async () => {
+    setAlert(els.createAlert, "", "");
+    const appId = els.newAppId.value.trim();
+    const label = els.newLabel.value.trim();
+    const mode = els.newMode.value;
+    if (!appId || !label) {
+      setAlert(els.createAlert, "err", "App ID and display name are required.");
+      return;
+    }
+    try {
+      const r = await api(`/api/platforms/${encodeURIComponent(appId)}/profile`, {
+        method: "PUT",
+        body: JSON.stringify({
+          appId,
+          label,
+          oauthMode: mode,
+          branding: {},
+          features: {},
+          auth: {},
+          defaultLocale: "en",
+          supportedLocales: ["en"],
+        }),
+      });
+      const data = await r.json();
+      if (!r.ok) {
+        setAlert(els.createAlert, "err", data.message || "Create failed.");
+        return;
+      }
+      setAlert(els.createAlert, "ok", `Registered "${label}".`);
+      els.newAppId.value = "";
+      els.newLabel.value = "";
+      loadPlatforms();
+    } catch (e) {
+      setAlert(els.createAlert, "err", e.message || "Create failed.");
+    }
+  });
+
+  els.oidcSaveBtn.addEventListener("click", async () => {
+    setAlert(els.oidcAlert, "", "");
+    const appId = els.oidcAppId.value.trim();
+    const secret = els.oidcSecret.value;
+    const redirects = els.oidcRedirects.value
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    if (!appId) {
+      setAlert(els.oidcAlert, "err", "Target App ID is required.");
+      return;
+    }
+    if (redirects.length === 0) {
+      setAlert(els.oidcAlert, "err", "At least one redirect URI is required.");
+      return;
+    }
+    try {
+      const r = await api(
+        `/api/platforms/${encodeURIComponent(appId)}/provider-credentials/tanvrit_oidc`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            enabled: true,
+            clientId: appId,
+            clientSecret: secret || "",
+            redirectUris: redirects,
+          }),
+        },
+      );
+      const data = await r.json();
+      if (!r.ok) {
+        setAlert(els.oidcAlert, "err", data.message || "Save failed.");
+        return;
+      }
+      setAlert(els.oidcAlert, "ok", "OIDC client saved.");
+      els.oidcSecret.value = "";
+    } catch (e) {
+      setAlert(els.oidcAlert, "err", e.message || "Save failed.");
+    }
+  });
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  if (state.token) {
+    showApp();
+  } else {
+    showLogin();
+  }
+})();
+</script>
+</body>
+</html>

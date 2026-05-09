@@ -1,1 +1,8 @@
+# Cloudflare Pages routing.
+#
+# Specific files (portal.html, docs/, openapi.yaml, *.css, etc.) are served
+# as-is — Pages tries the literal path first and only falls through to a
+# rewrite when the file doesn't exist. The catch-all below maps any
+# otherwise-unknown path to /index.html so the Scalar API reference page
+# can show a friendly "no such doc" rather than the default 404.
 /*  /index.html  200
