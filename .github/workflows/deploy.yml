@@ -7,7 +7,8 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, tanvrit]
+    runs-on:
+      group: tanvrit
     # Self-hosted runner required: wrangler pre-authenticated via runner-local
     # CF credentials; migrating to ubuntu-latest requires a CLOUDFLARE_API_TOKEN
     # org secret (see R23 migration doc). Keep self-hosted until token is
