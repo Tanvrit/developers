@@ -9,7 +9,8 @@ jobs:
   deploy:
     runs-on:
       group: tanvrit
-      labels: [Linux]
+      # Linux self-hosted runner down 2026-07 — macOS fallback; revert to [Linux] when it's back
+      labels: [macos]
     # Self-hosted runner required: wrangler pre-authenticated via runner-local
     # CF credentials; migrating to ubuntu-latest requires a CLOUDFLARE_API_TOKEN
     # org secret (see R23 migration doc). Keep self-hosted until token is
