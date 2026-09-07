@@ -7,10 +7,17 @@ on:
 
 jobs:
   deploy:
+    # 2026-09-07: the self-hosted Linux pool is out of disk — it reports
+    # "Free space left: 0 MB" and fails jobs across every repo. Routed to
+    # macOS in the same `tanvrit` group while that is cleared. Revert to the
+    # Linux label once the pool is healthy. Keep an OS label either way: the
+    # group also holds a Windows node, where bash steps parse as pwsh.
+    # NOTE: wrangler auth here is runner-local (see below); if the deploy
+    # fails to authenticate on a mac node, that is why.
     runs-on:
       group: tanvrit
       # Linux self-hosted runner fleet back online 2026-07-11 — reverted from macOS fallback
-      labels: [Linux]
+      labels: [macOS]
     # Self-hosted runner required: wrangler pre-authenticated via runner-local
     # CF credentials; migrating to ubuntu-latest requires a CLOUDFLARE_API_TOKEN
     # org secret (see R23 migration doc). Keep self-hosted until token is
