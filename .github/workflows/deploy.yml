@@ -19,7 +19,9 @@ jobs:
     # Auth is the CLOUDFLARE_API_TOKEN repo secret passed to wrangler below, not
     # runner-local wrangler state (the 2026-09-11 macOS run logged
     # `CLOUDFLARE_API_TOKEN: ***`), so the deploy does not depend on which runner picks it up.
-    # R24: This deploys developers.tanvrit.com to production. Require approval.
+    # R24: This deploys developers.tanvrit.com to production. The `production` environment
+    # has no protection rules (2026-09-24: `protection_rules: []`), so nothing approves the
+    # run: every push to main ships.
     environment: production
     name: Deploy
 

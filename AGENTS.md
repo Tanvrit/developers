@@ -46,8 +46,8 @@ Repo-specific deltas only:
 
 `.github/workflows/deploy.yml` deploys **on every push to `main`** (and `workflow_dispatch`):
 
-- Runs on the self-hosted runner `group: tanvrit, labels: [Linux]` — wrangler is pre-authenticated via runner-local Cloudflare creds. Migrating to `ubuntu-latest` needs a `CLOUDFLARE_API_TOKEN` org secret (R23). Do not change the runner labels without reading the R23/R24 comments in the workflow.
-- Uses `environment: production` (**approval-gated**) with `CLOUDFLARE_ACCOUNT_ID=ce3f0ef57641c98d52af95c069bbb6a2` and `CLOUDFLARE_API_TOKEN` from secrets. Command: `npx wrangler pages deploy . --project-name tanvrit-developers --branch main --commit-dirty=true`.
+- Runs on the self-hosted Linux X64 runners: `group: tanvrit, labels: [self-hosted, Linux, X64]` (since 2026-09-23; it had been detoured to `labels: [macOS]` during the 2026-09-07 Linux disk outage). Keep `X64` explicit — a bare `[self-hosted, Linux]` also matches the ARM64 GX10 runners — and keep an OS label, because the group also holds a Windows node. Auth is the `CLOUDFLARE_API_TOKEN` repo secret, not runner-local wrangler state, so the job does not depend on which runner picks it up. `actions/setup-node` (Node 24, no Actions cache) is load-bearing: the Linux runners have no Node on PATH.
+- Uses `environment: production` with `CLOUDFLARE_ACCOUNT_ID=ce3f0ef57641c98d52af95c069bbb6a2` and `CLOUDFLARE_API_TOKEN` from secrets. The environment has **no protection rules** (checked 2026-09-24: `gh api repos/Tanvrit/developers/environments/production` returns `protection_rules: []`), so nothing approves the deploy — a push to `main` ships. Command: `npx --yes wrangler@4 pages deploy . --project-name tanvrit-developers --branch main --commit-dirty=true`.
 - CI does **not** run `bundle.py` — it deploys the committed tree as-is. So a stale `openapi.yaml` ships if you edited `openapi/*.yaml` but forgot `npm run bundle`. Always bundle before pushing spec changes.
 
 ## Blast Radius — needs explicit authorization
