@@ -28,6 +28,10 @@ permissions:
 jobs:
   guard:
     name: No GitHub-hosted runners
+    # Public repo, self-hosted runners: a pull_request from a fork must never
+    # execute here (Parmar runs jobs as root; the GX10 is a workstation). Push
+    # and dispatch are unaffected; same-repo PRs still run.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on:
       group: tanvrit
       labels: [self-hosted, Linux, X64]
