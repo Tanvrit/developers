@@ -26,13 +26,13 @@ jobs:
     name: Deploy
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # The macOS runners had a Homebrew node on PATH (and npx resolved a local wrangler
       # 4.73.0 there); the Linux runners guarantee neither. No Actions cache: nothing is
       # installed from a lockfile here, and on self-hosted runners the cache round-trip
       # costs more than it saves.
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
           package-manager-cache: false
