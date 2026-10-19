@@ -14,7 +14,7 @@ jobs:
     # either way because the group also holds a Windows node, where bash steps parse as pwsh.
     runs-on:
       group: tanvrit
-      labels: [self-hosted, Linux, X64]
+      labels: [self-hosted, macOS, ARM64]
     timeout-minutes: 15
     # Auth is the CLOUDFLARE_API_TOKEN repo secret passed to wrangler below, not
     # runner-local wrangler state (the 2026-09-11 macOS run logged
@@ -26,6 +26,9 @@ jobs:
     name: Deploy
 
     steps:
+      - name: Prepare macOS CI tools
+        if: runner.os == 'macOS'
+        uses: tanvrit/artifactory/.github/actions/macos-ci-tools@main
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # The macOS runners had a Homebrew node on PATH (and npx resolved a local wrangler
